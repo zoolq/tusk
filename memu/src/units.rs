@@ -42,7 +42,7 @@ impl KiloByte {
 
     /// Creates a new instance of `KiloByte` where `bytes` represents any amount of bytes.
     pub fn new(bytes: u64) -> Self {
-        KiloByte(bytes * KILOBYTE)
+        KiloByte(bytes)
     }
 }
 
