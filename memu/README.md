@@ -19,6 +19,6 @@ In this example we first crate a `KiloByte` with 913 Kilobytes. We then print it
 
 # Features
 The crate contains the following features:
-- serde, serialize and deserialize data with the serde crate.
-- macro, use macros to create the storage structs. Enabled by default.
-- units, include text based units such as "KB" and "TB". Enabled by default.
+-  serde, serialize and deserialize data with the serde crate.
+-  macro, use macros to create the storage structs. Enabled by default.
+-  units, include text based units such as "KB" and "TB". Enabled by default.
