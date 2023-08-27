@@ -1,7 +1,7 @@
 macro_rules! data_impl {
     ($self:ty) => {
         impl $self {
-            /// Maps any function to the internally held `u128`.
+            /// Maps any function to the internally held `u64`.
             pub fn map<F, T>(&mut self, f: F) -> T
             where
                 F: FnOnce(u64) -> T,
@@ -51,6 +51,7 @@ macro_rules! data_impl {
             }
 
             /// Returns a string containing`self.as_u64()` and `Self::UNIT`.
+            #[cfg(feature = "units")]
             pub fn as_string_with_unit(&self) -> String {
                 format!("{:.}{}", self.as_f64(), Self::UNIT)
             }
@@ -61,6 +62,7 @@ macro_rules! data_impl {
             }
 
             /// Returns a string contaning `self.as_f64()` with the given precision and `Self::UNIT`.
+            #[cfg(feature = "units")]
             pub fn as_string_with_unit_and_precision(&self, precision: usize) -> String {
                 format!("{:.precision$}{}", self.as_f64(), Self::UNIT, precision = precision)
             }
