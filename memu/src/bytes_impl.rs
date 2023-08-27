@@ -9,41 +9,62 @@ macro_rules! data_impl {
                 f(self.0)
             }
 
-
+            /// Returns the units suffix.
             #[cfg(feature = "units")]
             pub fn get_unit() -> &'static str {
                 Self::UNIT
             }
 
-            /// Returns the unit as a `f32`
+            /// Returns the unit as a `f32`.
             pub fn as_f32(&self) -> f32 {
                 self.0 as f32 / Self::FACTOR as f32
             }
 
-            /// Returns the unit as a `f64`
+            /// Returns the unit as a `f64`.
             pub fn as_f64(&self) -> f64 {
                 self.0 as f64 / Self::FACTOR as f64
             }
 
-            /// Returns the unit as a `u8`
+            /// Returns the unit as a `u8`.
             pub fn as_u8(&self) -> u8 {
                 (self.0 / Self::FACTOR) as u8
             }
 
-            /// Returns the unit as a `u16`
+            /// Returns the unit as a `u16`.
             pub fn as_u16(&self) -> u16 {
                 (self.0 / Self::FACTOR) as u16
             }
 
-            /// Returns the unit as a `u32`
+            /// Returns the unit as a `u32`.
             pub fn as_u32(&self) -> u32 {
                 (self.0 / Self::FACTOR) as u32
             }
 
-            /// Returns the unit as a `u64`
+            /// Returns the unit as a `u64`.
             pub fn as_u64(&self) -> u64 {
                 (self.0 / Self::FACTOR) as u64
             }
+
+            /// Returns a string containing `self.as_f64` at the availible precision.
+            pub fn as_string(&self) -> String {
+                format!("{:.}", self.as_f64())
+            }
+
+            /// Returns a string containing`self.as_u64()` and `Self::UNIT`.
+            pub fn as_string_with_unit(&self) -> String {
+                format!("{:.}{}", self.as_f64(), Self::UNIT)
+            }
+
+            /// Returns a string containing `self.as_f64()` with the given precision.
+            pub fn as_string_with_precision(&self, precision: usize) -> String {
+                format!("{:.precision$}", self.as_f64(), precision = precision)
+            }
+
+            /// Returns a string contaning `self.as_f64()` with the given precision and `Self::UNIT`.
+            pub fn as_string_with_unit_and_precision(&self, precision: usize) -> String {
+                format!("{:.precision$}{}", self.as_f64(), Self::UNIT, precision = precision)
+            }
+
         }
 
 
@@ -248,6 +269,21 @@ macro_rules! data_impl {
                 write!(f, "{}", self.0)
             }
         }
+
+        impl std::ops::Deref for $self {
+            type Target = u64;
+
+            fn deref(&self) -> &Self::Target {
+                &self.0
+            }
+        }
+
+        impl std::ops::DerefMut for $self {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.0
+            }
+        }
+
 
         impl $crate::MemoryUnit for $self {
             fn as_bits(&self) -> u128 {
