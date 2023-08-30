@@ -30,7 +30,7 @@ mod datapoints {
 	pub const CPU_FREQUENCY_DATAPOINTS: usize = 100;
 	pub const NETWORK_DATAPOINTS: usize = 100;
 
-	pub const NETWORK_MINIMUM_HIGHEST_THRUPUT: KiloByte = KiloByte::from(3);
+	pub const NETWORK_MINIMUM_HIGHEST_THRUPUT: KiloByte = KiloByte::from_u8(3);
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
