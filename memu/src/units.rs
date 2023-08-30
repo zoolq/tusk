@@ -20,7 +20,7 @@ impl Byte {
 	pub const UNIT: &str = "B";
 
 	/// Creates a new instance of `Byte` where `bytes` represents any amount of bytes.
-	pub fn new(bytes: u64) -> Self {
+	pub const fn new(bytes: u64) -> Self {
 		Byte(bytes)
 	}
 }
@@ -41,7 +41,7 @@ impl KiloByte {
 	pub const UNIT: &str = "KB";
 
 	/// Creates a new instance of `KiloByte` where `bytes` represents any amount of bytes.
-	pub fn new(bytes: u64) -> Self {
+	pub const fn new(bytes: u64) -> Self {
 		KiloByte(bytes)
 	}
 }
@@ -62,7 +62,7 @@ impl MegaByte {
 	pub const UNIT: &str = "MB";
 
 	/// Creates a new instance of `MegaByte` where `bytes` represents any amount of bytes.
-	pub fn new(bytes: u64) -> Self {
+	pub const fn new(bytes: u64) -> Self {
 		MegaByte(bytes)
 	}
 }
@@ -83,7 +83,7 @@ impl GigaByte {
 	pub const UNIT: &str = "GB";
 
 	/// Creates a new instance of `GigaByte` where `bytes` represents any amount of bytes.
-	pub fn new(bytes: u64) -> Self {
+	pub const fn new(bytes: u64) -> Self {
 		GigaByte(bytes)
 	}
 }
@@ -104,7 +104,7 @@ impl TeraByte {
 	pub const UNIT: &str = "TB";
 
 	/// Creates a new instance of `TeraByte` where `bytes` represents any amount of bytes.
-	pub fn new(bytes: u64) -> Self {
+	pub const fn new(bytes: u64) -> Self {
 		TeraByte(bytes)
 	}
 }
@@ -125,7 +125,7 @@ impl PetaByte {
 	pub const UNIT: &str = "PB";
 
 	/// Creates a new instance of `PetaByte` where `bytes` represents any amount of bytes.
-	pub fn new(bytes: u64) -> Self {
+	pub const fn new(bytes: u64) -> Self {
 		PetaByte(bytes)
 	}
 }
