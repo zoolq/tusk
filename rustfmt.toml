@@ -42,7 +42,6 @@ struct_field_align_threshold = 0
 doc_comment_code_block_width = 100
 
 binop_separator = "Front"
-fn_params_layout = "Vertical"
 brace_style = "AlwaysNextLine"
 control_brace_style = "AlwaysSameLine"
 imports_indent = "Block"
