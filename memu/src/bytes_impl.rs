@@ -11,8 +11,93 @@ macro_rules! data_impl {
 
             /// Returns the units suffix.
             #[cfg(feature = "units")]
-            pub fn get_unit() -> &'static str {
+            pub const fn get_unit() -> &'static str {
                 Self::UNIT
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            pub const fn from_u8(value: u8) -> Self {
+                <$self>::new(value as u64 * Self::FACTOR)
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            pub const fn from_u16(value: u16) -> Self {
+                <$self>::new(value as u64 * Self::FACTOR)
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            pub const fn from_u32(value: u32) -> Self {
+                <$self>::new(value as u64 * Self::FACTOR)
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            pub const fn from_u64(value: u64) -> Self {
+                <$self>::new(value * Self::FACTOR)
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            pub const fn from_u128(value: u128) -> Self {
+                <$self>::new(value as u64 * Self::FACTOR)
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            ///
+            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            pub const fn from_i8(value: i8) -> Self {
+                let value = if value.is_negative() { -value } else { value };
+                <$self>::new(value as u64 * Self::FACTOR)
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            ///
+            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            pub const fn from_i16(value: i16) -> Self {
+                let value = if value.is_negative() { -value } else { value };
+                <$self>::new(value as u64 * Self::FACTOR)
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            ///
+            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            pub const fn from_i32(value: i32) -> Self {
+                let value = if value.is_negative() { -value } else { value };
+                <$self>::new(value as u64 * Self::FACTOR)
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            ///
+            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            pub const fn from_i64(value: i64) -> Self {
+                let value = if value.is_negative() { -value } else { value };
+                <$self>::new(value as u64 * Self::FACTOR)
+            }
+
+            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            ///
+            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            pub const fn from_i128(value: i128) -> Self {
+                let value = if value.is_negative() { -value } else { value };
+                <$self>::new(value as u64 * Self::FACTOR)
+            }
+
+            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            pub fn from_f32(value: f32) -> Self {
+                let value = if value.is_sign_negative() {
+                    -value
+                } else {
+                    value
+                };
+                <$self>::new((value * Self::FACTOR as f32) as u64)
+            }
+
+            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            pub fn from_f64(value: f64) -> Self {
+                let value = if value.is_sign_negative() {
+                    -value
+                } else {
+                    value
+                };
+                <$self>::new((value * Self::FACTOR as f64) as u64)
             }
 
             /// Returns the unit as a `f32`.
@@ -26,22 +111,22 @@ macro_rules! data_impl {
             }
 
             /// Returns the unit as a `u8`.
-            pub fn as_u8(&self) -> u8 {
+            pub const fn as_u8(&self) -> u8 {
                 (self.0 / Self::FACTOR) as u8
             }
 
             /// Returns the unit as a `u16`.
-            pub fn as_u16(&self) -> u16 {
+            pub const fn as_u16(&self) -> u16 {
                 (self.0 / Self::FACTOR) as u16
             }
 
             /// Returns the unit as a `u32`.
-            pub fn as_u32(&self) -> u32 {
+            pub const fn as_u32(&self) -> u32 {
                 (self.0 / Self::FACTOR) as u32
             }
 
             /// Returns the unit as a `u64`.
-            pub fn as_u64(&self) -> u64 {
+            pub const fn as_u64(&self) -> u64 {
                 (self.0 / Self::FACTOR) as u64
             }
 
