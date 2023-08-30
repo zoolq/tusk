@@ -5,11 +5,10 @@ use crossterm::event::{
 
 #[derive(Default)]
 pub enum ControlFlow {
-	// Indicates the `handle_event` function called another function.
-	FunctionCalled,
 	// Indicates the program should continue.
 	#[default]
 	Continue,
+	Reload,
 	// Indicated the program should quit.
 	Quit,
 }
@@ -18,6 +17,7 @@ pub fn handle_event(event: Event) -> ControlFlow {
 	if let Key(key) = event {
 		match key.code {
 			Char('q') => return ControlFlow::Quit,
+			Char('r') => return ControlFlow::Reload,
 			_ => return ControlFlow::default(),
 		}
 	}

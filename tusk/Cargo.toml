@@ -10,3 +10,7 @@ sysinfo = "0.29.8"
 memu = { path = "../memu" }
 crossterm = "0.27.0"
 ratatui = "0.23.0"
+log = "0.4.20"
+humantime = "2.1.0"
+fern = "0.6.2"
+lazy_static = "1.4.0"
