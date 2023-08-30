@@ -1,6 +1,7 @@
-use std::{default, f64::consts::E, io};
-
-use crossterm::event::{self, Event::Key, KeyCode::Char};
+use crossterm::event::{
+	Event::{self, Key},
+	KeyCode::Char,
+};
 
 #[derive(Default)]
 pub enum ControlFlow {
@@ -13,13 +14,12 @@ pub enum ControlFlow {
 	Quit,
 }
 
-pub fn handle_event() -> io::Result<ControlFlow> {
-	let event = event::read()?;
+pub fn handle_event(event: Event) -> ControlFlow {
 	if let Key(key) = event {
 		match key.code {
-			Char('q') => return Ok(ControlFlow::Quit),
-			_ => return Ok(ControlFlow::default()),
+			Char('q') => return ControlFlow::Quit,
+			_ => return ControlFlow::default(),
 		}
 	}
-	Ok(ControlFlow::Continue)
+	ControlFlow::Continue
 }

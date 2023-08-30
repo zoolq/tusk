@@ -9,9 +9,7 @@ pub fn new_data(sys: &mut System) -> DrawingData {
 
 	let cpu_name = sys.cpus().first().unwrap().brand().to_owned();
 
-	let mut cpu_usage = VecDeque::from([0.0; CPU_USAGE_DATAPOINTS - 1]);
-
-	cpu_usage.push_back(compute_usage(sys.cpus()));
+	let cpu_usage = VecDeque::from([0.0; CPU_USAGE_DATAPOINTS]);
 
 	DrawingData {
 		cpu_name,
