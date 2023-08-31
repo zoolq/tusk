@@ -1,4 +1,7 @@
-use std::collections::VecDeque;
+use std::{
+	collections::VecDeque,
+	time::{Duration, Instant},
+};
 
 use memu::units::KiloByte;
 use sysinfo::{Cpu, CpuExt, NetworkExt, Networks, NetworksExt, System, SystemExt};
@@ -7,6 +10,32 @@ use crate::{
 	datapoints::{CPU_FREQUENCY_DATAPOINTS, CPU_USAGE_DATAPOINTS, NETWORK_DATAPOINTS},
 	terminal::DrawingData,
 };
+
+pub struct DataStorage {
+	pub last_snapshot: Instant,
+	pub network_in_last_sec: KiloByte,
+	pub network_out_last_sec: KiloByte,
+}
+
+impl DataStorage {
+	pub fn new() -> Self {
+		DataStorage {
+			last_snapshot: Instant::now(),
+			network_in_last_sec: KiloByte::default(),
+			network_out_last_sec: KiloByte::default(),
+		}
+	}
+
+	fn update_network(&mut self, sys: &mut System) {
+		let networks = sys.networks();
+		self.network_in_last_sec = compute_in(networks);
+		self.network_out_last_sec = compute_out(networks);
+	}
+
+	fn update_time(&mut self) {
+		self.last_snapshot = Instant::now();
+	}
+}
 
 pub fn new_data(sys: &mut System) -> DrawingData {
 	sys.refresh_all();
@@ -30,7 +59,7 @@ pub fn new_data(sys: &mut System) -> DrawingData {
 	}
 }
 
-pub fn fetch_data(sys: &mut System, prior: &mut DrawingData) {
+pub fn fetch_data(sys: &mut System, prior: &mut DrawingData, storage: &mut DataStorage) {
 	sys.refresh_cpu();
 
 	let cpus = sys.cpus();
@@ -42,14 +71,20 @@ pub fn fetch_data(sys: &mut System, prior: &mut DrawingData) {
 	prior.cpu_usage.push_back(compute_usage(cpus));
 
 	sys.refresh_networks();
-
-	let networks = sys.networks();
+	storage.update_network(sys);
+	let time = storage.last_snapshot.elapsed();
 
 	prior.network_in.pop_front();
-	prior.network_in.push_back(compute_in(networks));
+	prior
+		.network_in
+		.push_back(per_second(storage.network_in_last_sec, time));
 
 	prior.network_out.pop_front();
-	prior.network_out.push_back(compute_out(networks));
+	prior
+		.network_out
+		.push_back(per_second(storage.network_out_last_sec, time));
+
+	storage.update_time();
 }
 
 fn compute_in(networks: &Networks) -> KiloByte {
@@ -58,6 +93,10 @@ fn compute_in(networks: &Networks) -> KiloByte {
 
 fn compute_out(networks: &Networks) -> KiloByte {
 	KiloByte::new(networks.iter().map(|(_, n)| n.transmitted()).sum())
+}
+
+fn per_second(data: KiloByte, elapsed: Duration) -> KiloByte {
+	KiloByte::from(data.as_f64() / elapsed.as_secs_f64())
 }
 
 fn compute_frequency(vec: &[Cpu]) -> u64 {
