@@ -1,15 +1,12 @@
-use std::{
-	error::Error,
-	io, thread,
-	time::{Duration, Instant},
-};
+use std::{error::Error, io, thread, time::Instant};
 
 use crossterm::{
 	event::{self, DisableMouseCapture},
 	execute,
 	terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use data::{fetch_data, new_data};
+use data::{fetch_data, new_data, DataStorage};
+use datapoints::{EVENT_TIMEOUT, TICK_TIME};
 use ratatui::prelude::*;
 use sysinfo::{System, SystemExt};
 use terminal::draw::{draw, Screen};
@@ -19,12 +16,14 @@ use crate::terminal::events::{handle_event, ControlFlow};
 mod data;
 mod terminal;
 
-pub const TICK_TIME: Duration = Duration::from_millis(100);
-
-pub const EVENT_TIMEOUT: Duration = Duration::from_millis(10);
-
 mod datapoints {
+	use std::time::Duration;
+
 	use memu::units::KiloByte;
+
+	pub const TICK_TIME: Duration = Duration::from_millis(100);
+
+	pub const EVENT_TIMEOUT: Duration = Duration::from_millis(10);
 
 	pub const CPU_USAGE_DATAPOINTS: usize = 100;
 	pub const CPU_FREQUENCY_DATAPOINTS: usize = 100;
@@ -68,10 +67,12 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 
 	let mut data = new_data(&mut sys);
 
+	let mut storage = DataStorage::new();
+
 	loop {
 		let tick_start = Instant::now();
 
-		fetch_data(&mut sys, &mut data);
+		fetch_data(&mut sys, &mut data, &mut storage);
 
 		draw(Screen::Default, &data, terminal)?;
 

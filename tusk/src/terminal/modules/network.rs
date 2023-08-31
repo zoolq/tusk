@@ -3,7 +3,7 @@ use std::collections::VecDeque;
 use memu::units::KiloByte;
 use ratatui::{prelude::*, style::Style, symbols, text::Span, widgets::*, Frame};
 
-use crate::datapoints::NETWORK_MINIMUM_HIGHEST_THRUPUT;
+use crate::datapoints::{NETWORK_DATAPOINTS, NETWORK_MINIMUM_HIGHEST_THRUPUT};
 
 /// Draws two network graphs in the given areas
 pub fn draw_network<B: Backend>(
@@ -13,12 +13,12 @@ pub fn draw_network<B: Backend>(
 	in_area: Rect,
 	out_area: Rect,
 ) {
-	draw_out(f, &out_data, out_area);
-	draw_in(f, &in_data, in_area);
+	draw_out(f, out_data, out_area);
+	draw_in(f, in_data, in_area);
 }
 
 pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Rect) {
-	let (min, max) = min_max(&data);
+	let (min, max) = min_max(data);
 
 	let data: Vec<(f64, f64)> = data
 		.iter()
@@ -43,19 +43,19 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: R
 		.x_axis(
 			Axis::default()
 				.style(Style::default().fg(Color::Cyan))
-				.bounds([min, max]),
+				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
 				.style(Style::default().fg(Color::Cyan))
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled(format!("{}", min), Style::default().fg(Color::Green)),
+					Span::styled("0.0", Style::default().fg(Color::Green)),
 					Span::styled(
-						format!("{}", (min + max) / 2.0),
+						format!("{:.1}", (min + max) / 2.0),
 						Style::default().fg(Color::Green),
 					),
-					Span::styled(format!("{}", max), Style::default().fg(Color::Green)),
+					Span::styled(format!("{:.}", max), Style::default().fg(Color::Green)),
 				]),
 		);
 
@@ -63,7 +63,7 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: R
 }
 
 pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Rect) {
-	let (min, max) = min_max(&data);
+	let (min, max) = min_max(data);
 
 	let data: Vec<(f64, f64)> = data
 		.iter()
@@ -88,19 +88,19 @@ pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Re
 		.x_axis(
 			Axis::default()
 				.style(Style::default().fg(Color::Cyan))
-				.bounds([0.0, data.len() as f64]),
+				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
 				.style(Style::default().fg(Color::Cyan))
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled(format!("{}", min), Style::default().fg(Color::Green)),
+					Span::styled("0.0", Style::default().fg(Color::Green)),
 					Span::styled(
-						format!("{}", (min + max) / 2.0),
+						format!("{:.1}", (min + max) / 2.0),
 						Style::default().fg(Color::Green),
 					),
-					Span::styled(format!("{}", max), Style::default().fg(Color::Green)),
+					Span::styled(format!("{:.}", max), Style::default().fg(Color::Green)),
 				]),
 		);
 
@@ -113,5 +113,10 @@ fn min_max(data: &VecDeque<KiloByte>) -> (f64, f64) {
 		.iter()
 		.max()
 		.unwrap_or(&NETWORK_MINIMUM_HIGHEST_THRUPUT);
+	let max = if max > &NETWORK_MINIMUM_HIGHEST_THRUPUT {
+		*max
+	} else {
+		NETWORK_MINIMUM_HIGHEST_THRUPUT
+	};
 	(min, max.as_f64())
 }
