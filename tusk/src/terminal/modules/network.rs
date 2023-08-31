@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 
+use log::info;
 use memu::units::KiloByte;
 use ratatui::{prelude::*, style::Style, symbols, text::Span, widgets::*, Frame};
 
@@ -18,6 +19,8 @@ pub fn draw_network<B: Backend>(
 }
 
 pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Rect) {
+	info!("{:?}", data);
+
 	let (min, max) = min_max(data);
 
 	let data: Vec<(f64, f64)> = data
@@ -50,12 +53,12 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: R
 				.style(Style::default().fg(Color::Cyan))
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0.0", Style::default().fg(Color::Green)),
+					Span::styled("0", Style::default().fg(Color::Green)),
 					Span::styled(
-						format!("{:.1}", (min + max) / 2.0),
+						format!("{:.0}", (min + max) / 2.0),
 						Style::default().fg(Color::Green),
 					),
-					Span::styled(format!("{:.}", max), Style::default().fg(Color::Green)),
+					Span::styled(format!("{:.0}", max), Style::default().fg(Color::Green)),
 				]),
 		);
 
@@ -63,6 +66,8 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: R
 }
 
 pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Rect) {
+	info!("{:?}", data);
+
 	let (min, max) = min_max(data);
 
 	let data: Vec<(f64, f64)> = data
@@ -95,12 +100,12 @@ pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Re
 				.style(Style::default().fg(Color::Cyan))
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0.0", Style::default().fg(Color::Green)),
+					Span::styled("0", Style::default().fg(Color::Green)),
 					Span::styled(
-						format!("{:.1}", (min + max) / 2.0),
+						format!("{:.0}", (min + max) / 2.0),
 						Style::default().fg(Color::Green),
 					),
-					Span::styled(format!("{:.}", max), Style::default().fg(Color::Green)),
+					Span::styled(format!("{:.0}", max), Style::default().fg(Color::Green)),
 				]),
 		);
 

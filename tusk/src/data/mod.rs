@@ -1,15 +1,16 @@
-use std::{
-	collections::VecDeque,
-	time::{Duration, Instant},
-};
+mod util;
+
+use std::{collections::VecDeque, time::Instant};
 
 use memu::units::KiloByte;
-use sysinfo::{Cpu, CpuExt, NetworkExt, Networks, NetworksExt, System, SystemExt};
+use sysinfo::{CpuExt, System, SystemExt};
 
 use crate::{
-	datapoints::{CPU_FREQUENCY_DATAPOINTS, CPU_USAGE_DATAPOINTS, NETWORK_DATAPOINTS},
+	datapoints::{CPU_USAGE_DATAPOINTS, NETWORK_DATAPOINTS},
 	terminal::DrawingData,
 };
+
+use self::util::*;
 
 pub struct DataStorage {
 	pub last_snapshot: Instant,
@@ -44,7 +45,7 @@ pub fn new_data(sys: &mut System) -> DrawingData {
 
 	let cpu_usage = VecDeque::from([0.0; CPU_USAGE_DATAPOINTS]);
 
-	let cpu_frequency = VecDeque::from([0; CPU_FREQUENCY_DATAPOINTS]);
+	let cpu_frequency = 0;
 
 	let network_in = VecDeque::from([KiloByte::new(0); NETWORK_DATAPOINTS]);
 
@@ -52,8 +53,8 @@ pub fn new_data(sys: &mut System) -> DrawingData {
 
 	DrawingData {
 		cpu_name,
-		cpu_usage,
 		cpu_frequency,
+		cpu_usage,
 		network_in,
 		network_out,
 	}
@@ -64,8 +65,7 @@ pub fn fetch_data(sys: &mut System, prior: &mut DrawingData, storage: &mut DataS
 
 	let cpus = sys.cpus();
 
-	prior.cpu_frequency.pop_front();
-	prior.cpu_frequency.push_back(compute_frequency(cpus));
+	prior.cpu_frequency = compute_frequency(cpus);
 
 	prior.cpu_usage.pop_front();
 	prior.cpu_usage.push_back(compute_usage(cpus));
@@ -85,24 +85,4 @@ pub fn fetch_data(sys: &mut System, prior: &mut DrawingData, storage: &mut DataS
 		.push_back(per_second(storage.network_out_last_sec, time));
 
 	storage.update_time();
-}
-
-fn compute_in(networks: &Networks) -> KiloByte {
-	KiloByte::new(networks.iter().map(|(_, n)| n.received()).sum())
-}
-
-fn compute_out(networks: &Networks) -> KiloByte {
-	KiloByte::new(networks.iter().map(|(_, n)| n.transmitted()).sum())
-}
-
-fn per_second(data: KiloByte, elapsed: Duration) -> KiloByte {
-	KiloByte::from(data.as_f64() / elapsed.as_secs_f64())
-}
-
-fn compute_frequency(vec: &[Cpu]) -> u64 {
-	vec.iter().map(|core| core.frequency()).sum::<u64>() / vec.len() as u64
-}
-
-fn compute_usage(vec: &[Cpu]) -> f32 {
-	vec.iter().map(|core| core.cpu_usage()).sum::<f32>() / vec.len() as f32
 }
