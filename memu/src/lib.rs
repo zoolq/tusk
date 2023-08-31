@@ -29,7 +29,7 @@ We use the `KiloByte::new()` method here, since `process.memory()` returns bytes
 ```Rust
 use memu::units::KiloByte;
 use sysinfo::{ProcessExt, System, SystemExt};
-//!
+
 fn main() {
 	let mut sys = System::new_all();
 	sys.refresh_all();
