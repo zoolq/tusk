@@ -19,13 +19,13 @@ mod terminal;
 mod datapoints {
 	use std::time::Duration;
 
-	use memu::units::KiloByte;
+	use memu::units::MegaByte;
 
 	pub const TICK_TIME: Duration = Duration::from_millis(100);
 	pub const EVENT_TIMEOUT: Duration = Duration::from_millis(0);
 	pub const CPU_USAGE_DATAPOINTS: usize = 100;
 	pub const NETWORK_DATAPOINTS: usize = 100;
-	pub const NETWORK_MINIMUM_HIGHEST_THRUPUT: KiloByte = KiloByte::from_u8(3);
+	pub const NETWORK_MINIMUM_HIGHEST_THRUPUT: MegaByte = MegaByte::from_u8(3);
 }
 
 fn main() -> Result<(), Box<dyn Error>> {

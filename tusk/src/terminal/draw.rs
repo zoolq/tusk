@@ -1,9 +1,10 @@
-use std::{io, path::PathBuf};
+use std::io;
 
 use ratatui::{prelude::*, widgets::*};
 
 use ratatui::widgets::Tabs as TabWidget;
 
+use super::tabs::processes::draw_processes;
 use super::{tabs::default::draw_default, DrawingData};
 
 #[derive(Default, Clone, Copy)]
@@ -11,27 +12,15 @@ pub enum Screen {
 	/// The default screen, a bit of everything.
 	#[default]
 	Default,
-	/// A custom screen, found in a .yaml file.
-	Custom,
-	/// A special cpu screen with lots of cpu information.
-	Cpu,
-	/// A special network screen with lots of network information.
-	Network,
-	/// A special memory screen with lots of memory information.
-	Memory,
-	/// A special process screen with information on the running processes.
-	Process,
+	/// A special process screen with process information.
+	Processes,
 }
 
 impl Screen {
 	fn as_string(&self) -> &str {
 		match *self {
 			Self::Default => "Default",
-			Self::Custom => "Custom",
-			Self::Cpu => "Cpu",
-			Self::Network => "Network",
-			Self::Memory => "Memory",
-			Self::Process => "Process",
+			Self::Processes => "Process",
 		}
 	}
 }
@@ -45,7 +34,7 @@ impl Tabs {
 	pub fn new() -> Self {
 		Tabs {
 			index: 0,
-			tabs: vec![Screen::Default, Screen::Cpu],
+			tabs: vec![Screen::Default, Screen::Processes],
 		}
 	}
 
@@ -87,13 +76,14 @@ fn ui<B: Backend>(f: &mut Frame<B>, data: &DrawingData, tabs: &Tabs) {
 	let size = f.size();
 	let chunks = Layout::default()
 		.constraints([Constraint::Length(3), Constraint::Min(0)].as_ref())
+		.margin(1)
 		.split(size);
 
 	draw_tabs(f, tabs, chunks[0]);
 
 	match tabs.current() {
 		Screen::Default => draw_default(f, data, chunks[1]),
-		_ => draw_default(f, data, chunks[1]),
+		Screen::Processes => draw_processes(f, data, chunks[1]),
 	}
 }
 

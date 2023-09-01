@@ -13,3 +13,8 @@ ratatui = "0.23.0"
 log = "0.4.20"
 fern = "0.6.2"
 lazy_static = "1.4.0"
+systemstat = "0.2.3"
+serde = { version = "1.0.188", features = ["derive"] }
+features = "0.10.0"
+color-to-tui = "0.3.0"
+serde_yaml = "0.9.25"
