@@ -1,7 +1,7 @@
 use std::collections::VecDeque;
 
 use log::info;
-use memu::units::KiloByte;
+use memu::units::MegaByte;
 use ratatui::{prelude::*, style::Style, symbols, text::Span, widgets::*, Frame};
 
 use crate::datapoints::{NETWORK_DATAPOINTS, NETWORK_MINIMUM_HIGHEST_THRUPUT};
@@ -9,8 +9,8 @@ use crate::datapoints::{NETWORK_DATAPOINTS, NETWORK_MINIMUM_HIGHEST_THRUPUT};
 /// Draws two network graphs in the given areas
 pub fn draw_network<B: Backend>(
 	f: &mut Frame<B>,
-	in_data: &VecDeque<KiloByte>,
-	out_data: &VecDeque<KiloByte>,
+	in_data: &VecDeque<MegaByte>,
+	out_data: &VecDeque<MegaByte>,
 	in_area: Rect,
 	out_area: Rect,
 ) {
@@ -18,7 +18,7 @@ pub fn draw_network<B: Backend>(
 	draw_in(f, in_data, in_area);
 }
 
-pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Rect) {
+pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Rect) {
 	info!("{:?}", data);
 
 	let (min, max) = min_max(data);
@@ -39,7 +39,7 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: R
 	let chart = Chart::new(vec![dataset])
 		.block(
 			Block::default()
-				.title("Network Data")
+				.title("Network Out (MB)")
 				.borders(Borders::ALL)
 				.border_style(Style::default().fg(Color::Green)),
 		)
@@ -65,7 +65,7 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: R
 	f.render_widget(chart, area);
 }
 
-pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Rect) {
+pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Rect) {
 	info!("{:?}", data);
 
 	let (min, max) = min_max(data);
@@ -86,7 +86,7 @@ pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Re
 	let chart = Chart::new(vec![dataset])
 		.block(
 			Block::default()
-				.title("Network In")
+				.title("Network In (MB)")
 				.borders(Borders::ALL)
 				.border_style(Style::default().fg(Color::Green)),
 		)
@@ -112,7 +112,7 @@ pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<KiloByte>, area: Re
 	f.render_widget(chart, area);
 }
 
-fn min_max(data: &VecDeque<KiloByte>) -> (f64, f64) {
+fn min_max(data: &VecDeque<MegaByte>) -> (f64, f64) {
 	let min = 0.0;
 	let max = data
 		.iter()

@@ -1,18 +1,18 @@
 use std::time::Duration;
 
-use memu::units::KiloByte;
+use memu::units::MegaByte;
 use sysinfo::{Cpu, CpuExt, NetworkExt, Networks, NetworksExt};
 
-pub fn compute_in(networks: &Networks) -> KiloByte {
-	KiloByte::new(networks.iter().map(|(_, n)| n.received()).sum())
+pub fn compute_in(networks: &Networks) -> MegaByte {
+	MegaByte::new(networks.iter().map(|(_, n)| n.received()).sum())
 }
 
-pub fn compute_out(networks: &Networks) -> KiloByte {
-	KiloByte::new(networks.iter().map(|(_, n)| n.transmitted()).sum())
+pub fn compute_out(networks: &Networks) -> MegaByte {
+	MegaByte::new(networks.iter().map(|(_, n)| n.transmitted()).sum())
 }
 
-pub fn per_second(data: KiloByte, elapsed: Duration) -> KiloByte {
-	KiloByte::from(data.as_f64() / elapsed.as_secs_f64())
+pub fn per_second(data: MegaByte, elapsed: Duration) -> MegaByte {
+	MegaByte::from(data.as_f64() / elapsed.as_secs_f64())
 }
 
 pub fn compute_frequency(vec: &[Cpu]) -> u64 {
