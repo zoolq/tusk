@@ -35,7 +35,7 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: R
 	let chart = Chart::new(vec![dataset])
 		.block(
 			Block::default()
-				.title("Network Out (MB)")
+				.title("Network Out (MB/s)".bold())
 				.borders(Borders::ALL)
 				.border_style(Style::default().fg(Color::Green)),
 		)
@@ -79,7 +79,7 @@ pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Re
 	let chart = Chart::new(vec![dataset])
 		.block(
 			Block::default()
-				.title("Network In (MB)")
+				.title("Network In (MB/s)".bold())
 				.borders(Borders::ALL)
 				.border_style(Style::default().fg(Color::Green)),
 		)

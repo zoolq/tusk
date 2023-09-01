@@ -1,8 +1,8 @@
 use ratatui::{prelude::*, widgets::*, Frame};
 
-use crate::terminal::DrawingData;
+use crate::terminal::Data;
 
-pub fn draw_stats<B: Backend>(f: &mut Frame<B>, data: &DrawingData, area: Rect) {
+pub fn draw_stats<B: Backend>(f: &mut Frame<B>, data: &Data, area: Rect) {
 	let text = vec![
 		Line::from(format!("Name {}", data.cpu_name)),
 		Line::from(format!("Frequency {}MHz", data.cpu_frequency)),

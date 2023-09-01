@@ -6,90 +6,31 @@ use ratatui::widgets::Tabs as TabWidget;
 
 use super::tabs::default::window_default;
 use super::tabs::processes::window_processes;
-use super::DrawingData;
-
-#[derive(Default, Clone, Copy)]
-pub enum Screen {
-	/// The default screen, a bit of everything.
-	#[default]
-	Default,
-	/// A special process screen with process information.
-	Processes,
-}
-
-impl Screen {
-	fn as_string(&self) -> &str {
-		match *self {
-			Self::Default => "Default",
-			Self::Processes => "Process",
-		}
-	}
-}
-
-pub struct Tabs {
-	index: usize,
-	tabs: Vec<Screen>,
-}
-
-impl Tabs {
-	pub fn new() -> Self {
-		Tabs {
-			index: 0,
-			tabs: vec![Screen::Default, Screen::Processes],
-		}
-	}
-
-	pub fn current(&self) -> Screen {
-		let index = self.index % self.tabs.len();
-		self.tabs[index]
-	}
-
-	pub fn inc_index(&mut self) {
-		self.index += 1;
-		self.index %= self.tabs.len();
-	}
-
-	pub fn dec_index(&mut self) {
-		if self.index != 0 {
-			self.index -= 1;
-		} else {
-			self.index = self.tabs.len() - 1;
-		}
-		self.index %= self.tabs.len();
-	}
-
-	pub fn index(&self) -> usize {
-		self.index % self.tabs.len()
-	}
-}
+use super::{Data, Screen, State};
 
 /// Wrapper function for drawing terminals
-pub fn draw<B: Backend>(
-	terminal: &mut Terminal<B>,
-	data: &DrawingData,
-	tabs: &Tabs,
-) -> io::Result<()> {
-	terminal.draw(|f| ui(f, data, tabs))?;
+pub fn draw<B: Backend>(terminal: &mut Terminal<B>, data: &Data, state: &State) -> io::Result<()> {
+	terminal.draw(|f| ui(f, data, state))?;
 	Ok(())
 }
 
-fn ui<B: Backend>(f: &mut Frame<B>, data: &DrawingData, tabs: &Tabs) {
+fn ui<B: Backend>(f: &mut Frame<B>, data: &Data, state: &State) {
 	let size = f.size();
 	let chunks = Layout::default()
 		.constraints([Constraint::Length(3), Constraint::Min(0)].as_ref())
 		.margin(1)
 		.split(size);
 
-	draw_tabs(f, tabs, chunks[0]);
+	draw_tabs(f, state, chunks[0]);
 
-	match tabs.current() {
+	match state.curret_tab() {
 		Screen::Default => window_default(f, data, chunks[1]),
 		Screen::Processes => window_processes(f, data, chunks[1]),
 	}
 }
 
-fn draw_tabs<B: Backend>(f: &mut Frame<B>, tabs: &Tabs, area: Rect) {
-	let titles = tabs
+fn draw_tabs<B: Backend>(f: &mut Frame<B>, state: &State, area: Rect) {
+	let titles = state
 		.tabs
 		.iter()
 		.map(|t| {
@@ -107,7 +48,7 @@ fn draw_tabs<B: Backend>(f: &mut Frame<B>, tabs: &Tabs, area: Rect) {
 				.style(Style::default().fg(Color::Green)),
 		)
 		.highlight_style(Style::default().fg(Color::Yellow))
-		.select(tabs.index());
+		.select(state.tabs_index());
 
 	f.render_widget(tabs, area);
 }

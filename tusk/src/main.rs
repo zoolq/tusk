@@ -9,7 +9,7 @@ use data::{fetch_data, new_data, DataStorage};
 use datapoints::{EVENT_TIMEOUT, TICK_TIME};
 use ratatui::prelude::*;
 use sysinfo::{System, SystemExt};
-use terminal::draw::{draw, Tabs};
+use terminal::{draw::draw, Screen, State};
 
 use crate::terminal::events::{handle_event, ControlFlow};
 
@@ -26,7 +26,10 @@ mod datapoints {
 	pub const CPU_USAGE_DATAPOINTS: usize = 100;
 	pub const NETWORK_DATAPOINTS: usize = 100;
 	pub const NETWORK_MINIMUM_HIGHEST_THRUPUT: MegaByte = MegaByte::from_u8(3);
+	pub const TRACKED_PROCESS_DATAPOINTS: usize = 100;
 }
+
+pub const TABS: [Screen; 2] = [Screen::Default, Screen::Processes];
 
 fn main() -> Result<(), Box<dyn Error>> {
 	enable_raw_mode()?;
@@ -74,7 +77,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 /// - handle keys
 ///
 fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
-	let mut tabs = Tabs::new();
+	let mut state = State::new();
 
 	let mut sys = System::new_all();
 
@@ -87,11 +90,11 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 
 		fetch_data(&mut sys, &mut data, &mut storage);
 
-		draw(terminal, &data, &tabs)?;
+		draw(terminal, &data, &state)?;
 
 		if event::poll(EVENT_TIMEOUT)? {
 			let event = event::read()?;
-			let flow = handle_event(event, &mut tabs);
+			let flow = handle_event(event, &mut state);
 			match flow {
 				ControlFlow::Continue => (),
 				ControlFlow::Quit => break,

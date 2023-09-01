@@ -7,7 +7,7 @@ use sysinfo::{CpuExt, System, SystemExt};
 
 use crate::{
 	datapoints::{CPU_USAGE_DATAPOINTS, NETWORK_DATAPOINTS},
-	terminal::{DrawingData, Process},
+	terminal::{Data, Process},
 };
 
 use self::util::*;
@@ -38,65 +38,78 @@ impl DataStorage {
 	}
 }
 
-pub fn new_data(sys: &mut System) -> DrawingData {
+pub fn new_data(sys: &mut System) -> Data {
 	sys.refresh_all();
 
 	let cpu_name = sys.cpus().first().unwrap().brand().to_owned();
 
-	let cpu_usage = VecDeque::from([0.0; CPU_USAGE_DATAPOINTS]);
+	let cpu_usage = VecDeque::new();
 
 	let cpu_frequency = 0;
 
-	let network_in = VecDeque::from([MegaByte::new(0); NETWORK_DATAPOINTS]);
+	let network_in = VecDeque::new();
 
-	let network_out = VecDeque::from([MegaByte::new(0); NETWORK_DATAPOINTS]);
+	let network_out = VecDeque::new();
 
 	let processes = Vec::new();
 
-	DrawingData {
+	let tracked_pid = None;
+
+	let tracked = None;
+
+	Data {
 		cpu_name,
 		cpu_frequency,
 		cpu_usage,
 		network_in,
 		network_out,
 		processes,
+		tracked_pid,
+		tracked,
 	}
 }
 
-pub fn fetch_data(sys: &mut System, prior: &mut DrawingData, storage: &mut DataStorage) {
-	{
-		sys.refresh_cpu();
+pub fn fetch_data(sys: &mut System, prior: &mut Data, storage: &mut DataStorage) {
+	let elapsed = storage.last_snapshot.elapsed();
+	sys.refresh_cpu();
+	sys.refresh_networks();
+	sys.refresh_processes();
 
+	{
 		let cpus = sys.cpus();
 
 		prior.cpu_frequency = compute_frequency(cpus);
 
-		prior.cpu_usage.pop_front();
+		if prior.cpu_usage.len() == CPU_USAGE_DATAPOINTS {
+			prior.cpu_usage.pop_front();
+		}
+
 		prior.cpu_usage.push_back(compute_usage(cpus));
 	}
 
 	{
-		sys.refresh_networks();
-
 		storage.update_network(sys);
-		let time = storage.last_snapshot.elapsed();
 
-		prior.network_in.pop_front();
+		if prior.network_in.len() == NETWORK_DATAPOINTS {
+			prior.network_in.pop_front();
+		}
+
 		prior
 			.network_in
-			.push_back(per_second(storage.network_in_last_sec, time));
+			.push_back(per_second(storage.network_in_last_sec, elapsed));
 
-		prior.network_out.pop_front();
+		if prior.network_out.len() == NETWORK_DATAPOINTS {
+			prior.network_out.pop_front();
+		}
+
 		prior
 			.network_out
-			.push_back(per_second(storage.network_out_last_sec, time));
+			.push_back(per_second(storage.network_out_last_sec, elapsed));
 
 		storage.update_time();
 	}
 
 	{
-		sys.refresh_processes();
-
 		let processes = sys.processes();
 
 		prior.processes = Vec::with_capacity(processes.len());
@@ -107,5 +120,24 @@ pub fn fetch_data(sys: &mut System, prior: &mut DrawingData, storage: &mut DataS
 
 		prior.processes.sort_by(|a, b| a.memory.cmp(&b.memory));
 		prior.processes.reverse();
+
+		if let Some(pid) = prior.tracked_pid {
+			if let Some(tracked_process) = &mut prior.tracked {
+				if let Some(process) = processes.get(&pid) {
+					update_tracked(process, tracked_process, elapsed)
+				} else {
+					prior.tracked_pid = None;
+				}
+			} else {
+				if let Some(process) = processes.get(&pid) {
+					prior.tracked = Some(new_tracked(&pid, &process));
+					if let Some(tracked_process) = &mut prior.tracked {
+						update_tracked(process, tracked_process, elapsed);
+					}
+				} else {
+					prior.tracked_pid = None;
+				}
+			}
+		}
 	}
 }

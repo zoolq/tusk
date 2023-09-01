@@ -11,7 +11,6 @@ memu = { path = "../memu" }
 crossterm = "0.27.0"
 ratatui = "0.23.0"
 lazy_static = "1.4.0"
-systemstat = "0.2.3"
 serde = { version = "1.0.188", features = ["derive"] }
 features = "0.10.0"
 color-to-tui = "0.3.0"

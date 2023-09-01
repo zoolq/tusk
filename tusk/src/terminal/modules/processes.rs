@@ -12,7 +12,7 @@ pub fn draw_processes<B: Backend>(f: &mut Frame<B>, data: &[Process], area: Rect
 				i.name,
 				i.memory.as_string_with_unit_and_precision(2),
 			))
-			.style(Style::default().fg(Color::Black))
+			.style(Style::default().fg(Color::Cyan))
 		})
 		.collect();
 
@@ -20,7 +20,7 @@ pub fn draw_processes<B: Backend>(f: &mut Frame<B>, data: &[Process], area: Rect
 		.block(
 			Block::default()
 				.borders(Borders::ALL)
-				.title("Processes")
+				.title("Processes".bold())
 				.style(Style::default().fg(Color::Green)),
 		)
 		.bg(Color::Reset);

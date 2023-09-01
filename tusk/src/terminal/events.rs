@@ -3,7 +3,7 @@ use crossterm::event::{
 	KeyCode::{BackTab, Char, Tab},
 };
 
-use super::draw::Tabs;
+use super::State;
 
 pub enum ControlFlow {
 	/// Indicates the program should continue.
@@ -14,13 +14,13 @@ pub enum ControlFlow {
 	Quit,
 }
 
-pub fn handle_event(event: Event, tabs: &mut Tabs) -> ControlFlow {
+pub fn handle_event(event: Event, state: &mut State) -> ControlFlow {
 	if let Key(key) = event {
 		match key.code {
 			Char('q') => return ControlFlow::Quit,
 			Char('r') => return ControlFlow::Reload,
-			Tab => tabs.inc_index(),
-			BackTab => tabs.dec_index(),
+			Tab => state.inc_tabs_index(),
+			BackTab => state.dec_tabs_index(),
 			_ => return ControlFlow::Continue,
 		}
 	}

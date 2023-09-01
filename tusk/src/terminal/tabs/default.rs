@@ -2,10 +2,10 @@ use ratatui::prelude::*;
 
 use crate::terminal::{
 	modules::{cpu_usage::draw_usage, network::draw_network, stats::draw_stats},
-	DrawingData,
+	Data,
 };
 
-pub fn window_default<B: Backend>(f: &mut Frame<B>, data: &DrawingData, area: Rect) {
+pub fn window_default<B: Backend>(f: &mut Frame<B>, data: &Data, area: Rect) {
 	let chunks = Layout::default()
 		.direction(Direction::Vertical)
 		.constraints(
