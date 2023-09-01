@@ -1,6 +1,5 @@
 use std::collections::VecDeque;
 
-use log::info;
 use memu::units::MegaByte;
 use ratatui::{prelude::*, style::Style, symbols, text::Span, widgets::*, Frame};
 
@@ -19,8 +18,6 @@ pub fn draw_network<B: Backend>(
 }
 
 pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Rect) {
-	info!("{:?}", data);
-
 	let (min, max) = min_max(data);
 
 	let data: Vec<(f64, f64)> = data
@@ -30,7 +27,6 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: R
 		.collect();
 
 	let dataset = Dataset::default()
-		.name("Network out")
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
 		.style(Style::default().fg(Color::Red))
@@ -66,8 +62,6 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: R
 }
 
 pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Rect) {
-	info!("{:?}", data);
-
 	let (min, max) = min_max(data);
 
 	let data: Vec<(f64, f64)> = data
@@ -77,7 +71,6 @@ pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Re
 		.collect();
 
 	let dataset = Dataset::default()
-		.name("Network in")
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
 		.style(Style::default().fg(Color::Cyan))

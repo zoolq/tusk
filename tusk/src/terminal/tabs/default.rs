@@ -5,11 +5,7 @@ use crate::terminal::{
 	DrawingData,
 };
 
-pub fn draw_default<B: Backend>(f: &mut Frame<B>, data: &DrawingData, area: Rect) {
-	ui(f, data, area);
-}
-
-fn ui<B: Backend>(f: &mut Frame<B>, data: &DrawingData, area: Rect) {
+pub fn window_default<B: Backend>(f: &mut Frame<B>, data: &DrawingData, area: Rect) {
 	let chunks = Layout::default()
 		.direction(Direction::Vertical)
 		.constraints(

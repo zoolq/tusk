@@ -1,3 +1,4 @@
-pub mod cpu_usage;
-pub mod network;
-pub mod stats;
+pub(super) mod cpu_usage;
+pub(super) mod network;
+pub(super) mod processes;
+pub(super) mod stats;

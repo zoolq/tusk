@@ -72,6 +72,7 @@ The crate contains the following features:
 -  units, include text units such as "KB" and "TB". Enabled by default.
 */
 
+use constants::{GIGABYTE, KILOBYTE, MEGABYTE, TERABYTE};
 use units::{Byte, GigaByte, KiloByte, MegaByte, PetaByte, TeraByte};
 
 /// The core memory units.
@@ -104,4 +105,23 @@ pub trait MemoryUnit {
 	fn as_tera_byte(&self) -> TeraByte;
 	/// Converts the unit into [`PetaByte`]s.
 	fn as_peta_byte(&self) -> PetaByte;
+}
+
+/// This functions finds the first memory unit without a
+/// leading 0 infront of the comma.
+#[inline(never)]
+pub fn best_fit(bytes: u64) -> Box<dyn MemoryUnit> {
+	// There most likley is a faster way to do this using bitshifts by 10
+	// and then comparing something..?
+	if bytes < KILOBYTE {
+		Box::new(Byte::new(bytes))
+	} else if bytes < MEGABYTE {
+		Box::new(KiloByte::new(bytes))
+	} else if bytes < GIGABYTE {
+		Box::new(MegaByte::new(bytes))
+	} else if bytes < TERABYTE {
+		Box::new(GigaByte::new(bytes))
+	} else {
+		Box::new(PetaByte::new(bytes))
+	}
 }

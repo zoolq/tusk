@@ -4,8 +4,9 @@ use ratatui::{prelude::*, widgets::*};
 
 use ratatui::widgets::Tabs as TabWidget;
 
-use super::tabs::processes::draw_processes;
-use super::{tabs::default::draw_default, DrawingData};
+use super::tabs::default::window_default;
+use super::tabs::processes::window_processes;
+use super::DrawingData;
 
 #[derive(Default, Clone, Copy)]
 pub enum Screen {
@@ -82,8 +83,8 @@ fn ui<B: Backend>(f: &mut Frame<B>, data: &DrawingData, tabs: &Tabs) {
 	draw_tabs(f, tabs, chunks[0]);
 
 	match tabs.current() {
-		Screen::Default => draw_default(f, data, chunks[1]),
-		Screen::Processes => draw_processes(f, data, chunks[1]),
+		Screen::Default => window_default(f, data, chunks[1]),
+		Screen::Processes => window_processes(f, data, chunks[1]),
 	}
 }
 

@@ -29,8 +29,6 @@ mod datapoints {
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-	setup_logger().unwrap();
-
 	enable_raw_mode()?;
 	let mut stdout = io::stdout();
 
@@ -106,12 +104,4 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 		}
 	}
 	Ok(false)
-}
-
-fn setup_logger() -> Result<(), fern::InitError> {
-	fern::Dispatch::new()
-		.format(|out, message, _| out.finish(format_args!("{}", message)))
-		.chain(fern::log_file("output.log")?)
-		.apply()?;
-	Ok(())
 }
