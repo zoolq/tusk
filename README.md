@@ -13,7 +13,7 @@ Application:
 
 - `Shift + Tab`: Previous Tab
 
-- `F1`: Debug info (if anything goes wrong)
+- `F1`: Debug info
 
 Pages:
 
