@@ -7,12 +7,11 @@ mod tabs;
 use std::{
 	collections::VecDeque,
 	str::FromStr,
-	sync::{Arc, Mutex},
 	time::{Duration, Instant},
 };
 
 use crossterm::event::KeyCode::{self, Left, Right};
-use log::{error, Level, Log, Metadata, Record};
+use log::error;
 use memu::{
 	units::{KiloByte, MegaByte},
 	MemoryUnit,
@@ -22,7 +21,7 @@ use sysinfo::{CpuExt, Pid, PidExt, Process as Proc, ProcessExt, ProcessStatus, S
 
 use crate::{
 	datapoints::{
-		CPU_USAGE_DATAPOINTS, LOG_MESSAGES, NETWORK_DATAPOINTS, TRACKED_PROCESS_DATAPOINTS,
+		CPU_USAGE_DATAPOINTS, DEBUG_TICK_DATAPOINTS, NETWORK_DATAPOINTS, TRACKED_PROCESS_DATAPOINTS,
 	},
 	TABS,
 };
@@ -78,8 +77,17 @@ pub struct App {
 	tracked_pid: Option<Pid>,
 	pub tracked: Option<TrackedProcess>,
 	last_snapshot: Instant,
-	network_in_last_sec: MegaByte,
-	network_out_last_sec: MegaByte,
+	/// How long the data and drawing took to process.
+	pub working_tick: VecDeque<Duration>,
+	/// How long the tick really took
+	pub real_tick: VecDeque<Duration>,
+	refresh_prior: Duration,
+	/// Data refresh time per tick.
+	pub refresh_tick: VecDeque<Duration>, // This is always one datatpoint before the other tick data.
+	/// Drawing time per tick.
+	pub drawing_tick: VecDeque<Duration>,
+	/// Time handeling events per tick.
+	pub event_tick: VecDeque<Duration>,
 }
 
 impl App {
@@ -104,8 +112,12 @@ impl App {
 			tracked_pid: None,
 			tracked: None,
 			last_snapshot: Instant::now(),
-			network_in_last_sec: MegaByte::default(),
-			network_out_last_sec: MegaByte::default(),
+			working_tick: VecDeque::with_capacity(DEBUG_TICK_DATAPOINTS),
+			real_tick: VecDeque::with_capacity(DEBUG_TICK_DATAPOINTS),
+			refresh_prior: Duration::from_micros(0),
+			refresh_tick: VecDeque::with_capacity(DEBUG_TICK_DATAPOINTS),
+			drawing_tick: VecDeque::with_capacity(DEBUG_TICK_DATAPOINTS),
+			event_tick: VecDeque::with_capacity(DEBUG_TICK_DATAPOINTS),
 			sys,
 		};
 
@@ -115,6 +127,8 @@ impl App {
 	}
 
 	pub fn refresh(&mut self) {
+		let tick = Instant::now();
+
 		self.sys.refresh_cpu();
 		let elapsed = self.last_snapshot.elapsed();
 		self.sys.refresh_networks();
@@ -129,20 +143,20 @@ impl App {
 		self.cpu_usage.push_back(compute_usage(cpus));
 
 		let networks = self.sys.networks();
-		self.network_in_last_sec = compute_in(networks);
+		let network_in_last_sec = compute_in(networks);
 		if self.network_in.len() == NETWORK_DATAPOINTS {
 			self.network_in.pop_front();
 		}
 		self.network_in
-			.push_back(per_second(self.network_in_last_sec, elapsed));
+			.push_back(per_second(network_in_last_sec, elapsed));
 
-		self.network_out_last_sec = compute_out(networks);
+		let network_out_last_sec = compute_out(networks);
 		if self.network_out.len() == NETWORK_DATAPOINTS {
 			self.network_out.pop_front();
 		}
 
 		self.network_out
-			.push_back(per_second(self.network_out_last_sec, elapsed));
+			.push_back(per_second(network_out_last_sec, elapsed));
 
 		let processes = self.sys.processes();
 		self.processes = Vec::with_capacity(processes.len());
@@ -168,6 +182,12 @@ impl App {
 				self.tracked_pid = None;
 			}
 		}
+
+		if self.refresh_tick.len() == DEBUG_TICK_DATAPOINTS {
+			self.refresh_tick.pop_front();
+		}
+		self.refresh_tick.push_back(self.refresh_prior);
+		self.refresh_prior = tick.elapsed();
 	}
 
 	pub fn current_tab(&self) -> Screen {
@@ -267,6 +287,34 @@ impl App {
 		} else {
 			self.enable_debug()
 		}
+	}
+
+	pub fn working_tick(&mut self, tick: Duration) {
+		if self.working_tick.len() == DEBUG_TICK_DATAPOINTS {
+			self.working_tick.pop_front();
+		}
+		self.working_tick.push_back(tick);
+	}
+
+	pub fn real_tick(&mut self, tick: Duration) {
+		if self.real_tick.len() == DEBUG_TICK_DATAPOINTS {
+			self.real_tick.pop_front();
+		}
+		self.real_tick.push_back(tick);
+	}
+
+	pub fn draw_tick(&mut self, tick: Duration) {
+		if self.drawing_tick.len() == DEBUG_TICK_DATAPOINTS {
+			self.drawing_tick.pop_front();
+		}
+		self.drawing_tick.push_back(tick);
+	}
+
+	pub fn event_tick(&mut self, tick: Duration) {
+		if self.event_tick.len() == DEBUG_TICK_DATAPOINTS {
+			self.event_tick.pop_front();
+		}
+		self.event_tick.push_back(tick);
 	}
 }
 

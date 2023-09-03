@@ -7,7 +7,6 @@ use crossterm::{
 };
 
 use datapoints::{EVENT_TIMEOUT, TICK_TIME};
-use log::info;
 use ratatui::prelude::*;
 use terminal::{draw::draw, App, Screen};
 
@@ -15,12 +14,18 @@ use crate::terminal::events::{handle_event, ControlFlow};
 
 mod terminal;
 
+/// All data handiling constants are defined here.
 mod datapoints {
+	#![allow(dead_code)]
+
 	use std::time::Duration;
 
 	use memu::units::MegaByte;
 
-	pub const TICK_TIME: Duration = Duration::from_millis(100);
+	#[cfg(debug_assertions)]
+	pub const TICK_TIME: Duration = Duration::from_millis(50);
+	#[cfg(not(debug_assertions))]
+	pub const TICK_TIME: Duration = Duration::from_millis(16);
 	pub const EVENT_TIMEOUT: Duration = Duration::from_millis(0);
 	pub const CPU_USAGE_DATAPOINTS: usize = 100;
 	pub const NETWORK_DATAPOINTS: usize = 100;
@@ -28,11 +33,14 @@ mod datapoints {
 	pub const TRACKED_PROCESS_DATAPOINTS: usize = 100;
 	pub const TRACKED_MINIMUM_HIGHEST_MEMORY: MegaByte = MegaByte::from_u8(0);
 	pub const LOG_MESSAGES: usize = 100;
+	pub const DEBUG_TICK_DATAPOINTS: usize = 100;
 }
 
 pub const TABS: [Screen; 3] = [Screen::Default, Screen::Processes, Screen::Tracked];
 
 fn main() -> Result<(), Box<dyn Error>> {
+	setup_logger().unwrap_or(());
+
 	enable_raw_mode()?;
 	let mut stdout = io::stdout();
 
@@ -93,8 +101,11 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 
 		app.refresh();
 
+		let draw_tick = Instant::now();
 		draw(terminal, &app)?;
+		app.draw_tick(draw_tick.elapsed());
 
+		let event_tick = Instant::now();
 		if event::poll(EVENT_TIMEOUT)? {
 			let event = event::read()?;
 			let flow = handle_event(event, &mut app);
@@ -104,11 +115,28 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 				ControlFlow::Reload => return Ok(true),
 			}
 		}
+		app.event_tick(event_tick.elapsed());
 
-		info!("{:?}", tick_start);
+		app.working_tick(tick_start.elapsed());
 		if tick_start.elapsed() <= TICK_TIME {
 			thread::sleep(TICK_TIME - tick_start.elapsed());
 		}
+		app.real_tick(tick_start.elapsed());
 	}
 	Ok(false)
+}
+
+fn setup_logger() -> Result<(), fern::InitError> {
+	fern::Dispatch::new()
+		.format(|out, message, record| {
+			out.finish(format_args!(
+				"[{} {}] {}",
+				record.level(),
+				record.target(),
+				message
+			))
+		})
+		.chain(fern::log_file("output.log")?)
+		.apply()?;
+	Ok(())
 }

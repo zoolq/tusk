@@ -3,7 +3,8 @@ use ratatui::prelude::*;
 use crate::terminal::{
 	modules::{
 		cpu_usage::draw_usage,
-		tracked::{error::draw_error, tracked_process::draw_tracked_memory},
+		error::{draw_error, FrameError::MissingTracked},
+		tracked::tracked_process::draw_tracked_memory,
 	},
 	App,
 };
@@ -30,6 +31,6 @@ pub fn window_tracked<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		draw_usage(f, &tracked.cpu_usage, chunks_middle_split[0]);
 		draw_tracked_memory(f, &tracked.memory, chunks_middle_split[1]);
 	} else {
-		draw_error(f, area)
+		draw_error(f, MissingTracked, area);
 	}
 }
