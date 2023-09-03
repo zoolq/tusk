@@ -15,3 +15,4 @@ serde = { version = "1.0.188", features = ["derive"] }
 features = "0.10.0"
 color-to-tui = "0.3.0"
 serde_yaml = "0.9.25"
+log = { version = "0.4.20", features = ["std"] }

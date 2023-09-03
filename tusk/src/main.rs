@@ -5,15 +5,14 @@ use crossterm::{
 	execute,
 	terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
 };
-use data::{fetch_data, new_data, DataStorage};
+
 use datapoints::{EVENT_TIMEOUT, TICK_TIME};
+use log::info;
 use ratatui::prelude::*;
-use sysinfo::{System, SystemExt};
-use terminal::{draw::draw, Screen, State};
+use terminal::{draw::draw, App, Screen};
 
 use crate::terminal::events::{handle_event, ControlFlow};
 
-mod data;
 mod terminal;
 
 mod datapoints {
@@ -27,9 +26,11 @@ mod datapoints {
 	pub const NETWORK_DATAPOINTS: usize = 100;
 	pub const NETWORK_MINIMUM_HIGHEST_THRUPUT: MegaByte = MegaByte::from_u8(3);
 	pub const TRACKED_PROCESS_DATAPOINTS: usize = 100;
+	pub const TRACKED_MINIMUM_HIGHEST_MEMORY: MegaByte = MegaByte::from_u8(0);
+	pub const LOG_MESSAGES: usize = 100;
 }
 
-pub const TABS: [Screen; 2] = [Screen::Default, Screen::Processes];
+pub const TABS: [Screen; 3] = [Screen::Default, Screen::Processes, Screen::Tracked];
 
 fn main() -> Result<(), Box<dyn Error>> {
 	enable_raw_mode()?;
@@ -38,6 +39,14 @@ fn main() -> Result<(), Box<dyn Error>> {
 	execute!(stdout, EnterAlternateScreen, DisableMouseCapture)?;
 	let backend = CrosstermBackend::new(stdout);
 	let mut terminal = Terminal::new(backend)?;
+
+	let panic_hook = std::panic::take_hook();
+
+	std::panic::set_hook(Box::new(move |panic| {
+		disable_raw_mode().unwrap();
+		execute!(io::stdout(), LeaveAlternateScreen).unwrap();
+		panic_hook(panic);
+	}));
 
 	let mut app_output = run_app(&mut terminal);
 
@@ -77,24 +86,18 @@ fn main() -> Result<(), Box<dyn Error>> {
 /// - handle keys
 ///
 fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
-	let mut state = State::new();
-
-	let mut sys = System::new_all();
-
-	let mut data = new_data(&mut sys);
-
-	let mut storage = DataStorage::new();
+	let mut app = App::new();
 
 	loop {
 		let tick_start = Instant::now();
 
-		fetch_data(&mut sys, &mut data, &mut storage);
+		app.refresh();
 
-		draw(terminal, &data, &state)?;
+		draw(terminal, &app)?;
 
 		if event::poll(EVENT_TIMEOUT)? {
 			let event = event::read()?;
-			let flow = handle_event(event, &mut state);
+			let flow = handle_event(event, &mut app);
 			match flow {
 				ControlFlow::Continue => (),
 				ControlFlow::Quit => break,
@@ -102,6 +105,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 			}
 		}
 
+		info!("{:?}", tick_start);
 		if tick_start.elapsed() <= TICK_TIME {
 			thread::sleep(TICK_TIME - tick_start.elapsed());
 		}

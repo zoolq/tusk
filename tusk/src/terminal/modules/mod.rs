@@ -1,4 +1,6 @@
-pub(super) mod cpu_usage;
-pub(super) mod network;
-pub(super) mod processes;
-pub(super) mod stats;
+pub(crate) mod cpu_usage;
+pub(crate) mod debug;
+pub(crate) mod network;
+pub(crate) mod processes;
+pub(crate) mod stats;
+pub(crate) mod tracked;

@@ -7,10 +7,14 @@ pub fn draw_processes<B: Backend>(f: &mut Frame<B>, data: &[Process], area: Rect
 		.iter()
 		.map(|i| {
 			ListItem::new(format!(
-				"{}: {} {}",
+				"{:6}: {:10} {:10} {:10} {:10} {:10} {:10}",
 				i.pid,
 				i.name,
 				i.memory.as_string_with_unit_and_precision(2),
+				i.cpu_usage,
+				i.time,
+				i.total_written,
+				i.total_read
 			))
 			.style(Style::default().fg(Color::Cyan))
 		})

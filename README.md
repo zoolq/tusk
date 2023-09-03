@@ -13,6 +13,8 @@ Application:
 
 - `Shift + Tab`: Previous Tab
 
+- `F1`: Debug info (if anything goes wrong)
+
 Pages:
 
 - `↑` | `i`: Up

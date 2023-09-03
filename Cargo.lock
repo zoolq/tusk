@@ -505,6 +505,7 @@ dependencies = [
  "crossterm",
  "features",
  "lazy_static",
+ "log",
  "memu",
  "ratatui",
  "serde",
