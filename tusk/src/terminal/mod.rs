@@ -369,39 +369,3 @@ impl Process {
 		}
 	}
 }
-
-pub struct Logger {
-	log: Arc<Mutex<VecDeque<String>>>,
-}
-
-impl Logger {
-	pub fn new() -> Self {
-		Logger {
-			log: Arc::new(Mutex::new(VecDeque::new())),
-		}
-	}
-
-	pub fn logs(&self) -> Arc<Mutex<VecDeque<String>>> {
-		Arc::clone(&self.log)
-	}
-}
-
-impl Log for Logger {
-	fn enabled(&self, metadata: &Metadata) -> bool {
-		metadata.level() <= Level::Info
-	}
-
-	fn log(&self, record: &Record) {
-		if self.enabled(record.metadata()) {
-			let mut logs = self.log.lock().unwrap();
-
-			if logs.len() >= LOG_MESSAGES {
-				logs.pop_front();
-			}
-
-			logs.push_back(format!("{} - {}", record.level(), record.args()));
-		}
-	}
-
-	fn flush(&self) {}
-}
