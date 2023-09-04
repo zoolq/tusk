@@ -39,12 +39,12 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
 /// Draws the input top bar.
 fn draw_input<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 	let input = Paragraph::new(app.input.as_str())
-		.style(Style::default().fg(Color::Green))
+		.style(app.theme.text)
 		.block(
 			Block::default()
 				.borders(Borders::ALL)
 				.title("Input")
-				.style(Style::default().fg(Color::Green)),
+				.style(app.theme.window),
 		);
 	f.render_widget(input, area);
 	f.set_cursor(area.x + app.input_position as u16 + 1, area.y + 1)
@@ -55,21 +55,16 @@ fn draw_tabs<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 	let titles = app
 		.tabs
 		.iter()
-		.map(|t| {
-			text::Line::from(Span::styled(
-				t.as_string(),
-				Style::default().fg(Color::Green),
-			))
-		})
+		.map(|t| text::Line::from(Span::styled(t.as_string(), app.theme.tab)))
 		.collect();
 
 	let tabs = TabWidget::new(titles)
 		.block(
 			Block::default()
 				.borders(Borders::ALL)
-				.style(Style::default().fg(Color::Green)),
+				.style(app.theme.window),
 		)
-		.highlight_style(Style::default().fg(Color::Yellow))
+		.highlight_style(app.theme.selected_tab)
 		.select(app.tabs_index());
 
 	f.render_widget(tabs, area);

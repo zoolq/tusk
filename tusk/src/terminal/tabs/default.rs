@@ -23,13 +23,14 @@ pub fn window_default<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		.constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
 		.split(chunks[2]);
 
-	draw_usage(f, &app.cpu_usage, chunks[1]);
+	draw_usage(f, &app.cpu_usage, chunks[1], &app.theme);
 	draw_network(
 		f,
 		&app.network_in,
 		&app.network_out,
 		network_chunks[0],
 		network_chunks[1],
+		&app.theme,
 	);
 	draw_stats(f, app, chunks[0])
 }

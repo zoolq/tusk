@@ -25,6 +25,7 @@ use ratatui::widgets::ScrollbarState;
 use sysinfo::{CpuExt, Pid, PidExt, Process as Proc, ProcessExt, ProcessStatus, System, SystemExt};
 
 use crate::{
+	config::theme::Theme,
 	datapoints::{
 		CPU_USAGE_DATAPOINTS, DEBUG_TICK_DATAPOINTS, NETWORK_DATAPOINTS, TRACKED_PROCESS_DATAPOINTS,
 	},
@@ -72,6 +73,7 @@ pub enum TopBar {
 /// The main app struct handeling all app relevent information.
 pub struct App {
 	sys: System,
+	pub theme: Theme,
 	pub programs_scroll_state: ScrollbarState,
 	tabs_index: usize,
 	tabs: Vec<Screen>,
@@ -111,6 +113,7 @@ impl App {
 		sys.refresh_all();
 
 		let mut app = App {
+			theme: Theme::new(),
 			programs_scroll_state: ScrollbarState::default(),
 			tabs_index: 0,
 			tabs: Vec::from(TABS),
@@ -180,7 +183,8 @@ impl App {
 			self.processes.push(Process::from_pp(pid, process))
 		}
 
-		self.processes.sort_by(|a, b| b.memory.cmp(&a.memory));
+		self.processes
+			.sort_by(|a, b| b.cpu_usage.partial_cmp(&a.cpu_usage).unwrap());
 
 		if let Some(pid) = self.tracked_pid {
 			if let Some(tracked_process) = &mut self.tracked {

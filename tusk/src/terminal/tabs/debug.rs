@@ -29,5 +29,6 @@ pub fn window_debug<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		&app.drawing_tick,
 		&app.event_tick,
 		ticks[1],
+		&app.theme,
 	);
 }

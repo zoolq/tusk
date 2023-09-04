@@ -20,12 +20,20 @@ impl Byte {
 	pub const UNIT: &str = "B";
 
 	/// Creates a new instance of `Byte` where `bytes` represents any amount of bytes.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use memu::units::Byte;
+	///
+	/// let b = Byte::new(1);
+	/// ```
 	pub const fn new(bytes: u64) -> Self {
 		Byte(bytes)
 	}
 }
 
-data_impl!(Byte);
+data_impl!(Self = Byte, Unit = "B", Factor = BYTE);
 
 /// Represents a number of kilo bytes. Holds an amount of bytes internally.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default)]
@@ -41,12 +49,20 @@ impl KiloByte {
 	pub const UNIT: &str = "KB";
 
 	/// Creates a new instance of `KiloByte` where `bytes` represents any amount of bytes.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use memu::units::KiloByte;
+	///
+	/// let b = KiloByte::new(1024);
+	/// ```
 	pub const fn new(bytes: u64) -> Self {
 		KiloByte(bytes)
 	}
 }
 
-data_impl!(KiloByte);
+data_impl!(Self = KiloByte, Unit = "KB", Factor = KILOBYTE);
 
 /// Represents a number of mega bytes. Holds an amount of bytes internally.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default)]
@@ -62,12 +78,20 @@ impl MegaByte {
 	pub const UNIT: &str = "MB";
 
 	/// Creates a new instance of `MegaByte` where `bytes` represents any amount of bytes.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use memu::units::MegaByte;
+	///
+	/// let b = MegaByte::new(1048576);
+	/// ```
 	pub const fn new(bytes: u64) -> Self {
 		MegaByte(bytes)
 	}
 }
 
-data_impl!(MegaByte);
+data_impl!(Self = MegaByte, Unit = "MB", Factor = MEGABYTE);
 
 /// Represents a number of giga bytes. Holds an amount of bytes internally.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default)]
@@ -83,12 +107,20 @@ impl GigaByte {
 	pub const UNIT: &str = "GB";
 
 	/// Creates a new instance of `GigaByte` where `bytes` represents any amount of bytes.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use memu::units::GigaByte;
+	///
+	/// let b = GigaByte::new(1073741824);
+	/// ```
 	pub const fn new(bytes: u64) -> Self {
 		GigaByte(bytes)
 	}
 }
 
-data_impl!(GigaByte);
+data_impl!(Self = GigaByte, Unit = "GB", Factor = GIGABYTE);
 
 /// Represents a number of tera bytes. Holds an amount of bytes internally.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default)]
@@ -104,12 +136,20 @@ impl TeraByte {
 	pub const UNIT: &str = "TB";
 
 	/// Creates a new instance of `TeraByte` where `bytes` represents any amount of bytes.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use memu::units::TeraByte;
+	///
+	/// let b = TeraByte::new(1099511627776);
+	/// ```
 	pub const fn new(bytes: u64) -> Self {
 		TeraByte(bytes)
 	}
 }
 
-data_impl!(TeraByte);
+data_impl!(Self = TeraByte, Unit = "TB", Factor = TERABYTE);
 
 /// Represents a number of peta bytes. Holds an amount of bytes internally.
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default)]
@@ -125,9 +165,17 @@ impl PetaByte {
 	pub const UNIT: &str = "PB";
 
 	/// Creates a new instance of `PetaByte` where `bytes` represents any amount of bytes.
+	///
+	/// # Examples
+	///
+	/// ```
+	/// use memu::units::PetaByte;
+	///
+	/// let b = PetaByte::new(1125899906842624);
+	/// ```
 	pub const fn new(bytes: u64) -> Self {
 		PetaByte(bytes)
 	}
 }
 
-data_impl!(PetaByte);
+data_impl!(Self = PetaByte, Unit = "PB", Factor = PETABYTE);

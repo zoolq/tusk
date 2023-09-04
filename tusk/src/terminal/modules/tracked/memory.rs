@@ -3,9 +3,17 @@ use std::collections::VecDeque;
 use memu::units::MegaByte;
 use ratatui::{prelude::*, widgets::*};
 
-use crate::datapoints::{TRACKED_MINIMUM_HIGHEST_MEMORY, TRACKED_PROCESS_DATAPOINTS};
+use crate::{
+	config::theme::Theme,
+	datapoints::{TRACKED_MINIMUM_HIGHEST_MEMORY, TRACKED_PROCESS_DATAPOINTS},
+};
 
-pub fn draw_tracked_memory<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Rect) {
+pub fn draw_tracked_memory<B: Backend>(
+	f: &mut Frame<B>,
+	data: &VecDeque<MegaByte>,
+	area: Rect,
+	theme: &Theme,
+) {
 	let (min, mut max) = min_max(data);
 	max += 2.0;
 
@@ -18,7 +26,7 @@ pub fn draw_tracked_memory<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByt
 	let dataset = Dataset::default()
 		.marker(Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(Style::default().fg(Color::Cyan))
+		.style(theme.graph_1)
 		.data(&data);
 
 	let chart = Chart::new(vec![dataset])
@@ -26,20 +34,20 @@ pub fn draw_tracked_memory<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByt
 			Block::default()
 				.title("Memory Usage (MB)".bold())
 				.borders(Borders::ALL)
-				.border_style(Style::default().fg(Color::Green)),
+				.border_style(theme.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([0.0, TRACKED_PROCESS_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled(format!("{:.0}", min), Style::default().fg(Color::Green)),
-					Span::styled(format!("{:.0}", max), Style::default().fg(Color::Green)),
+					Span::styled(format!("{:.0}", min), theme.text),
+					Span::styled(format!("{:.0}", max), theme.text),
 				]),
 		);
 
