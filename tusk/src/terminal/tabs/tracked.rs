@@ -4,7 +4,7 @@ use crate::terminal::{
 	modules::{
 		cpu_usage::draw_usage,
 		error::{draw_error, FrameError::MissingTracked},
-		tracked::tracked_process::draw_tracked_memory,
+		tracked::memory::draw_tracked_memory,
 	},
 	App,
 };

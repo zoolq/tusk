@@ -36,6 +36,7 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &App) {
 	}
 }
 
+/// Draws the input top bar.
 fn draw_input<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 	let input = Paragraph::new(app.input.as_str())
 		.style(Style::default().fg(Color::Green))
@@ -49,6 +50,7 @@ fn draw_input<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 	f.set_cursor(area.x + app.input_position as u16 + 1, area.y + 1)
 }
 
+/// Draws the tabs top bar.
 fn draw_tabs<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 	let titles = app
 		.tabs

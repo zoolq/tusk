@@ -1,7 +1,12 @@
+/// Utilities `App` needs.
 mod app_util;
+/// Wrapper functions for drawing
 pub(super) mod draw;
+/// Wrapper functions for handling events.
 pub(super) mod events;
+/// This contains the windows drawn on the terminal.
 mod modules;
+/// This contains wrapper function for drawing tabs.
 mod tabs;
 
 use std::{
@@ -10,7 +15,7 @@ use std::{
 	time::{Duration, Instant},
 };
 
-use crossterm::event::KeyCode::{self, Left, Right};
+use crossterm::event::KeyCode::{self, Down, Left, Right, Up};
 use log::error;
 use memu::{
 	units::{KiloByte, MegaByte},
@@ -28,6 +33,7 @@ use crate::{
 
 use self::app_util::{compute_frequency, compute_in, compute_out, compute_usage, per_second};
 
+/// Defines which screen is drawn.
 #[derive(Default, Clone, Copy, PartialEq, Eq)]
 pub enum Screen {
 	/// The default screen, a bit of everything.
@@ -42,6 +48,7 @@ pub enum Screen {
 }
 
 impl Screen {
+	/// Gets the screens name, used for displaying.
 	fn as_string(&self) -> &str {
 		match *self {
 			Self::Default => "Default",
@@ -52,6 +59,7 @@ impl Screen {
 	}
 }
 
+/// Defines what goes in the top bar.
 #[derive(Default, Clone, Copy, PartialEq, Eq)]
 pub enum TopBar {
 	/// Display all tabs in the top bar.
@@ -60,6 +68,8 @@ pub enum TopBar {
 	/// Display input in the top bar.
 	Input,
 }
+
+/// The main app struct handeling all app relevent information.
 pub struct App {
 	sys: System,
 	pub programs_scroll_state: ScrollbarState,
@@ -77,13 +87,16 @@ pub struct App {
 	tracked_pid: Option<Pid>,
 	pub tracked: Option<TrackedProcess>,
 	last_snapshot: Instant,
+	/// Staches the current working tick time to ensure all ticks display the same refresh.
+	working_prior: Duration,
 	/// How long the data and drawing took to process.
 	pub working_tick: VecDeque<Duration>,
 	/// How long the tick really took
 	pub real_tick: VecDeque<Duration>,
+	/// Staches the current fetiching tick time to ensure all ticks display the same refresh.
 	refresh_prior: Duration,
 	/// Data refresh time per tick.
-	pub refresh_tick: VecDeque<Duration>, // This is always one datatpoint before the other tick data.
+	pub refresh_tick: VecDeque<Duration>,
 	/// Drawing time per tick.
 	pub drawing_tick: VecDeque<Duration>,
 	/// Time handeling events per tick.
@@ -91,6 +104,7 @@ pub struct App {
 }
 
 impl App {
+	/// Creates a new app.
 	pub fn new() -> Self {
 		let mut sys = System::new_all();
 
@@ -112,6 +126,7 @@ impl App {
 			tracked_pid: None,
 			tracked: None,
 			last_snapshot: Instant::now(),
+			working_prior: Duration::from_micros(0),
 			working_tick: VecDeque::with_capacity(DEBUG_TICK_DATAPOINTS),
 			real_tick: VecDeque::with_capacity(DEBUG_TICK_DATAPOINTS),
 			refresh_prior: Duration::from_micros(0),
@@ -126,6 +141,7 @@ impl App {
 		app
 	}
 
+	/// Refreshes the data.
 	pub fn refresh(&mut self) {
 		let tick = Instant::now();
 
@@ -190,16 +206,19 @@ impl App {
 		self.refresh_prior = tick.elapsed();
 	}
 
+	/// Gets the current tab.
 	pub fn current_tab(&self) -> Screen {
 		let tabs_index = self.tabs_index % self.tabs.len();
 		self.tabs[tabs_index]
 	}
 
+	/// Increments the tab index by 1.
 	pub fn inc_tabs_index(&mut self) {
 		self.tabs_index += 1;
 		self.tabs_index %= self.tabs.len();
 	}
 
+	/// Decreases the tab index by 1.
 	pub fn dec_tabs_index(&mut self) {
 		if self.tabs_index != 0 {
 			self.tabs_index -= 1;
@@ -209,15 +228,18 @@ impl App {
 		self.tabs_index %= self.tabs.len();
 	}
 
+	/// Gets the index of the current tab.
 	pub fn tabs_index(&self) -> usize {
 		self.tabs_index % self.tabs.len()
 	}
 
+	/// Inputs the given char.
 	pub fn input_type(&mut self, ch: char) {
 		self.input.insert(self.input_position, ch);
 		self.input_position += 1;
 	}
 
+	/// Deletes the char prior to the cursor.
 	pub fn input_backspace(&mut self) {
 		if self.input_position > 0 {
 			self.input_position -= 1;
@@ -230,6 +252,8 @@ impl App {
 		}
 	}
 
+	/// Moves the cursor in the given direction.
+	/// Up and down move to the start and end of line respectively.
 	pub fn arrow_event(&mut self, arrow: KeyCode) {
 		match arrow {
 			Left => {
@@ -242,16 +266,20 @@ impl App {
 					self.input_position += 1;
 				}
 			},
-			_ => unreachable!("This function is only called when `Left` or `Right` occurs"),
+			Up => self.input_position = 0,
+			Down => self.input_position = self.input.len(),
+			_ => (),
 		}
 	}
 
+	/// Clears the input string.
 	pub fn wipe_input(&mut self) {
 		self.top_bar = TopBar::Tabs;
 		self.input.clear();
 		self.input_position = 0;
 	}
 
+	/// Enters the input as tracked pid.
 	pub fn input_enter(&mut self) {
 		let pid = match Pid::from_str(&self.input) {
 			Ok(pid) => pid,
@@ -266,12 +294,14 @@ impl App {
 		self.wipe_input();
 	}
 
+	/// Makes the debug panel visible.
 	pub fn enable_debug(&mut self) {
 		if !self.tabs.contains(&Screen::Debug) {
 			self.tabs.push(Screen::Debug)
 		}
 	}
 
+	/// Makes the debug panel invisible.
 	pub fn disable_debug(&mut self) {
 		self.tabs = self
 			.tabs
@@ -281,6 +311,7 @@ impl App {
 			.collect();
 	}
 
+	/// Switches the debug panel on or off depending on prior state.
 	pub fn switch_debug(&mut self) {
 		if self.tabs.contains(&Screen::Debug) {
 			self.disable_debug()
@@ -289,13 +320,16 @@ impl App {
 		}
 	}
 
+	/// Add the working tick time to app.
 	pub fn working_tick(&mut self, tick: Duration) {
 		if self.working_tick.len() == DEBUG_TICK_DATAPOINTS {
 			self.working_tick.pop_front();
 		}
-		self.working_tick.push_back(tick);
+		self.working_tick.push_back(self.working_prior);
+		self.working_prior = tick;
 	}
 
+	/// Add the real tick time to app.
 	pub fn real_tick(&mut self, tick: Duration) {
 		if self.real_tick.len() == DEBUG_TICK_DATAPOINTS {
 			self.real_tick.pop_front();
@@ -303,6 +337,7 @@ impl App {
 		self.real_tick.push_back(tick);
 	}
 
+	/// Add the drawing tick time to app.
 	pub fn draw_tick(&mut self, tick: Duration) {
 		if self.drawing_tick.len() == DEBUG_TICK_DATAPOINTS {
 			self.drawing_tick.pop_front();
@@ -310,6 +345,7 @@ impl App {
 		self.drawing_tick.push_back(tick);
 	}
 
+	/// Add the event tick time to app.
 	pub fn event_tick(&mut self, tick: Duration) {
 		if self.event_tick.len() == DEBUG_TICK_DATAPOINTS {
 			self.event_tick.pop_front();
@@ -318,6 +354,7 @@ impl App {
 	}
 }
 
+/// A tracked process.
 #[derive(Debug)]
 pub struct TrackedProcess {
 	pub pid: u32,
@@ -333,6 +370,7 @@ pub struct TrackedProcess {
 }
 
 impl TrackedProcess {
+	/// Create a new tracked process from pid and process.
 	pub fn new(pid: &Pid, process: &Proc) -> Self {
 		let disk_usage = process.disk_usage();
 
@@ -350,6 +388,7 @@ impl TrackedProcess {
 		}
 	}
 
+	/// Refresh the tracked process.
 	pub fn refresh(&mut self, process: &Proc, elapsed: Duration) {
 		self.time = process.run_time();
 		self.status = process.status();
@@ -382,6 +421,7 @@ impl TrackedProcess {
 	}
 }
 
+/// A generic process.
 pub struct Process {
 	pub pid: u32,
 	pub name: String,
@@ -394,6 +434,7 @@ pub struct Process {
 }
 
 impl Process {
+	/// Create the process from a pid and process.
 	pub fn from_pp(pid: &Pid, process: &Proc) -> Self {
 		let pid = pid.as_u32();
 		let name = process.name().to_owned();
