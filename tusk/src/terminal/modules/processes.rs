@@ -1,8 +1,8 @@
 use ratatui::{prelude::*, widgets::*};
 
-use crate::terminal::Process;
+use crate::{config::theme::Theme, terminal::Process};
 
-pub fn draw_processes<B: Backend>(f: &mut Frame<B>, data: &[Process], area: Rect) {
+pub fn draw_processes<B: Backend>(f: &mut Frame<B>, data: &[Process], area: Rect, theme: &Theme) {
 	let items: Vec<ListItem> = data
 		.iter()
 		.map(|i| {
@@ -16,7 +16,7 @@ pub fn draw_processes<B: Backend>(f: &mut Frame<B>, data: &[Process], area: Rect
 				i.total_written,
 				i.total_read
 			))
-			.style(Style::default().fg(Color::Cyan))
+			.style(theme.text)
 		})
 		.collect();
 
@@ -25,7 +25,7 @@ pub fn draw_processes<B: Backend>(f: &mut Frame<B>, data: &[Process], area: Rect
 			Block::default()
 				.borders(Borders::ALL)
 				.title("Processes".bold())
-				.style(Style::default().fg(Color::Green)),
+				.style(theme.window),
 		)
 		.bg(Color::Reset);
 

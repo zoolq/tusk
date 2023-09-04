@@ -28,9 +28,9 @@ pub fn window_tracked<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 			.constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
 			.split(chunks[1]);
 
-		draw_usage(f, &tracked.cpu_usage, chunks_middle_split[0]);
-		draw_tracked_memory(f, &tracked.memory, chunks_middle_split[1]);
+		draw_usage(f, &tracked.cpu_usage, chunks_middle_split[0], &app.theme);
+		draw_tracked_memory(f, &tracked.memory, chunks_middle_split[1], &app.theme);
 	} else {
-		draw_error(f, MissingTracked, area);
+		draw_error(f, MissingTracked, area, &app.theme);
 	}
 }

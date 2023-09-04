@@ -9,7 +9,7 @@ edition = "2021"
 sysinfo = "0.29.8"
 memu = { path = "../memu" }
 crossterm = "0.27.0"
-ratatui = "0.23.0"
+ratatui = { version = "0.23.0", features = ["serde"] }
 lazy_static = "1.4.0"
 serde = { version = "1.0.188", features = ["derive"] }
 features = "0.10.0"

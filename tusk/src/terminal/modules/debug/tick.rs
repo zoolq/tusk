@@ -1,8 +1,11 @@
 use std::{collections::VecDeque, time::Duration};
 
-use ratatui::{prelude::*, style::Style, symbols, text::Span, widgets::*, Frame};
+use ratatui::{prelude::*, symbols, text::Span, widgets::*, Frame};
 
-use crate::datapoints::{NETWORK_DATAPOINTS, TICK_TIME};
+use crate::{
+	config::theme::Theme,
+	datapoints::{NETWORK_DATAPOINTS, TICK_TIME},
+};
 
 /// Draws two graphs of the different tick components.
 #[allow(clippy::too_many_arguments)]
@@ -15,6 +18,7 @@ pub fn draw_ticks<B: Backend>(
 	draw_data: &VecDeque<Duration>,
 	event_data: &VecDeque<Duration>,
 	split_tick_area: Rect,
+	theme: &Theme,
 ) {
 	let (min, max) = min_max(real_data);
 
@@ -25,10 +29,9 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let working_dataset = Dataset::default()
-		.name("process")
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(Style::default().fg(Color::Red))
+		.style(theme.graph_1)
 		.data(&working_data);
 
 	let real_data: Vec<(f64, f64)> = real_data
@@ -38,10 +41,9 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let real_dataset = Dataset::default()
-		.name("real")
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(Style::default().fg(Color::Cyan))
+		.style(theme.graph_2)
 		.data(&real_data);
 
 	let chart = Chart::new(vec![working_dataset, real_dataset])
@@ -49,25 +51,21 @@ pub fn draw_ticks<B: Backend>(
 			Block::default()
 				.title("Tick Times".bold())
 				.borders(Borders::ALL)
-				.border_style(Style::default().fg(Color::Green))
-				.style(Style::default().fg(Color::Green)),
+				.style(theme.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0ms", Style::default().fg(Color::Green)),
-					Span::styled(
-						format!("{:.0}ms", (min + max) / 2.0),
-						Style::default().fg(Color::Green),
-					),
-					Span::styled(format!("{:.0}ms", max), Style::default().fg(Color::Green)),
+					Span::styled("0ms", theme.text),
+					Span::styled(format!("{:.0}ms", (min + max) / 2.0), theme.text),
+					Span::styled(format!("{:.0}ms", max), theme.text),
 				]),
 		);
 
@@ -80,10 +78,9 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let refresh_dataset = Dataset::default()
-		.name("refreshing")
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(Style::default().fg(Color::Red))
+		.style(theme.graph_1)
 		.data(&refresh_data);
 
 	let draw_data: Vec<(f64, f64)> = draw_data
@@ -93,10 +90,9 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let draw_dataset = Dataset::default()
-		.name("drawing")
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(Style::default().fg(Color::Cyan))
+		.style(theme.graph_2)
 		.data(&draw_data);
 
 	let event_data: Vec<(f64, f64)> = event_data
@@ -106,10 +102,9 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let event_dataset = Dataset::default()
-		.name("events")
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(Style::default().fg(Color::Cyan))
+		.style(theme.graph_3)
 		.data(&event_data);
 
 	let chart = Chart::new(vec![refresh_dataset, draw_dataset, event_dataset])
@@ -117,25 +112,21 @@ pub fn draw_ticks<B: Backend>(
 			Block::default()
 				.title("Tick Times".bold())
 				.borders(Borders::ALL)
-				.border_style(Style::default().fg(Color::Green))
-				.style(Style::default().fg(Color::Green)),
+				.style(theme.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0ms", Style::default().fg(Color::Green)),
-					Span::styled(
-						format!("{:.0}ms", (min + max) / 2.0),
-						Style::default().fg(Color::Green),
-					),
-					Span::styled(format!("{:.0}ms", max), Style::default().fg(Color::Green)),
+					Span::styled("0ms", theme.text),
+					Span::styled(format!("{:.0}ms", (min + max) / 2.0), theme.text),
+					Span::styled(format!("{:.0}ms", max), theme.text),
 				]),
 		);
 

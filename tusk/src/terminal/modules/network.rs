@@ -1,9 +1,12 @@
 use std::collections::VecDeque;
 
 use memu::units::MegaByte;
-use ratatui::{prelude::*, style::Style, symbols, text::Span, widgets::*, Frame};
+use ratatui::{prelude::*, symbols, text::Span, widgets::*, Frame};
 
-use crate::datapoints::{NETWORK_DATAPOINTS, NETWORK_MINIMUM_HIGHEST_THRUPUT};
+use crate::{
+	config::theme::Theme,
+	datapoints::{NETWORK_DATAPOINTS, NETWORK_MINIMUM_HIGHEST_THRUPUT},
+};
 
 /// Draws two network graphs in the given areas
 pub fn draw_network<B: Backend>(
@@ -12,12 +15,19 @@ pub fn draw_network<B: Backend>(
 	out_data: &VecDeque<MegaByte>,
 	in_area: Rect,
 	out_area: Rect,
+	theme: &Theme,
 ) {
-	draw_out(f, out_data, out_area);
-	draw_in(f, in_data, in_area);
+	draw_out(f, out_data, out_area, theme);
+	draw_in(f, in_data, in_area, theme);
 }
 
-pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Rect) {
+/// Draws
+pub fn draw_out<B: Backend>(
+	f: &mut Frame<B>,
+	data: &VecDeque<MegaByte>,
+	area: Rect,
+	theme: &Theme,
+) {
 	let (min, max) = min_max(data);
 
 	let data: Vec<(f64, f64)> = data
@@ -29,7 +39,7 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: R
 	let dataset = Dataset::default()
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(Style::default().fg(Color::Red))
+		.style(theme.graph_2)
 		.data(&data);
 
 	let chart = Chart::new(vec![dataset])
@@ -37,31 +47,28 @@ pub fn draw_out<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: R
 			Block::default()
 				.title("Network Out (MB/s)".bold())
 				.borders(Borders::ALL)
-				.border_style(Style::default().fg(Color::Green)),
+				.border_style(theme.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0", Style::default().fg(Color::Green)),
-					Span::styled(
-						format!("{:.0}", (min + max) / 2.0),
-						Style::default().fg(Color::Green),
-					),
-					Span::styled(format!("{:.0}", max), Style::default().fg(Color::Green)),
+					Span::styled("0", theme.text),
+					Span::styled(format!("{:.0}", (min + max) / 2.0), theme.text),
+					Span::styled(format!("{:.0}", max), theme.text),
 				]),
 		);
 
 	f.render_widget(chart, area);
 }
 
-pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Rect) {
+pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Rect, theme: &Theme) {
 	let (min, max) = min_max(data);
 
 	let data: Vec<(f64, f64)> = data
@@ -73,7 +80,7 @@ pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Re
 	let dataset = Dataset::default()
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(Style::default().fg(Color::Cyan))
+		.style(theme.graph_1)
 		.data(&data);
 
 	let chart = Chart::new(vec![dataset])
@@ -81,24 +88,21 @@ pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Re
 			Block::default()
 				.title("Network In (MB/s)".bold())
 				.borders(Borders::ALL)
-				.border_style(Style::default().fg(Color::Green)),
+				.border_style(theme.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(Style::default().fg(Color::Cyan))
+				.style(theme.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0", Style::default().fg(Color::Green)),
-					Span::styled(
-						format!("{:.0}", (min + max) / 2.0),
-						Style::default().fg(Color::Green),
-					),
-					Span::styled(format!("{:.0}", max), Style::default().fg(Color::Green)),
+					Span::styled("0", theme.text),
+					Span::styled(format!("{:.0}", (min + max) / 2.0), theme.text),
+					Span::styled(format!("{:.0}", max), theme.text),
 				]),
 		);
 

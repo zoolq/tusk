@@ -16,6 +16,8 @@ use terminal::{draw::draw, App, Screen};
 
 use crate::terminal::events::{handle_event, ControlFlow};
 
+/// The `config` module takes care of all the programs configuration.
+mod config;
 /// The `terminal` module takes care of all the user interaction happening.
 mod terminal;
 
@@ -34,7 +36,7 @@ mod datapoints {
 	/// How long a tick should be.
 	/// This is 50ms in debug mode and 16 in release.
 	#[cfg(not(debug_assertions))]
-	pub const TICK_TIME: Duration = Duration::from_millis(16);
+	pub const TICK_TIME: Duration = Duration::from_millis(50);
 	/// How long `event::pool` should wait for events.
 	pub const EVENT_TIMEOUT: Duration = Duration::from_millis(1);
 	/// How many datapoints for cpu usage should be collected.
