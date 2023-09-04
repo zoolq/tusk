@@ -15,12 +15,16 @@ Application:
 
 - `F1`: Debug info (if anything goes wrong)
 
-Pages:
+- `i`: Track a process
 
-- `↑` | `i`: Up
+Input:
 
-- `↓` | `k`: Down
+- `any character`: Input the char
 
-- `→` | `l`: Right
+- `Backspace`: delete the last character
 
-- `←` | `j`: Left
+- `Enter`: Enter the typed text
+
+- `Esc`: Escape the input
+
+- `Left` | `Right`: Move the cursor left and right respectivley
