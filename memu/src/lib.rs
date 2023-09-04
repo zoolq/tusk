@@ -1,4 +1,5 @@
 #![allow(clippy::tabs_in_doc_comments)]
+#![deny(clippy::missing_const_for_fn)]
 #![deny(missing_docs)]
 
 /*!
@@ -109,7 +110,6 @@ pub trait MemoryUnit {
 
 /// This functions finds the first memory unit without a
 /// leading 0 infront of the comma.
-#[inline(never)]
 pub fn best_fit(bytes: u64) -> Box<dyn MemoryUnit> {
 	// There most likley is a faster way to do this using bitshifts by 10
 	// and then comparing something..?

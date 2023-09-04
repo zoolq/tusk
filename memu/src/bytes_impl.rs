@@ -1,7 +1,11 @@
 macro_rules! data_impl {
-    ($self:ty) => {
+    (
+        Self = $self:ty,
+        Unit = $unit:literal,
+        Factor = $factor:ident $(,)?
+    ) => {
         impl $self {
-            /// Maps any function to the internally held `u64`.
+            /// Maps any function to the internally held [`u64`].
             pub fn map<F, T>(&mut self, f: F) -> T
             where
                 F: FnOnce(u64) -> T,
@@ -9,78 +13,165 @@ macro_rules! data_impl {
                 f(self.0)
             }
 
-            /// Returns the units suffix.
+            /// Returns the unit suffix of this unit of data.
+            ///
+            /// # Examples
+            /// ```
+            #[doc = concat!("assert_eq!(", stringify!($self), "::UNIT,", stringify!($unit), ");")]
+            /// ```
             #[cfg(feature = "units")]
             pub const fn get_unit() -> &'static str {
                 Self::UNIT
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from a [`u8`].
+            ///
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_u8(1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_u8(value: u8) -> Self {
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from a [`u16`].
+            ///
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_u16(1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_u16(value: u16) -> Self {
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from a [`u32`].
+            ///
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_u32(1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_u32(value: u32) -> Self {
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from a [`u64`].
+            ///
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_u64(1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_u64(value: u64) -> Self {
                 <$self>::new(value * Self::FACTOR)
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from a [`u128`].
+            ///
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_u128(1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_u128(value: u128) -> Self {
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from the absoloute value of a [`i8`].
             ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_i8(-1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_i8(value: i8) -> Self {
                 let value = if value.is_negative() { -value } else { value };
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from the absoloute value of a [`i16`].
             ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_i16(-1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_i16(value: i16) -> Self {
                 let value = if value.is_negative() { -value } else { value };
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from the absoloute value of a [`i32`].
             ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_i32(-1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_i32(value: i32) -> Self {
                 let value = if value.is_negative() { -value } else { value };
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from the absoloute value of a [`i64`].
             ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_i64(-1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_i64(value: i64) -> Self {
                 let value = if value.is_negative() { -value } else { value };
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
+            /// Creates this unit from the absoloute value of a [`i128`].
             ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            /// # Examples
+            /// ```
+            #[doc = concat!("let unit = ", stringify!($self), "::from_i128(-1);")]
+            ///
+            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            /// ```
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
             pub const fn from_i128(value: i128) -> Self {
                 let value = if value.is_negative() { -value } else { value };
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            /// Creates this unit from the absoloute value of a [`f32`].
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or an equivalent From trait.")]
             pub fn from_f32(value: f32) -> Self {
                 let value = if value.is_sign_negative() {
                     -value
@@ -90,7 +181,9 @@ macro_rules! data_impl {
                 <$self>::new((value * Self::FACTOR as f32) as u64)
             }
 
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            /// Creates this unit from the absoloute value of a [f64].
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or an equivalent From trait.")]
             pub fn from_f64(value: f64) -> Self {
                 let value = if value.is_sign_negative() {
                     -value
@@ -100,50 +193,40 @@ macro_rules! data_impl {
                 <$self>::new((value * Self::FACTOR as f64) as u64)
             }
 
-            /// Returns the unit as a `f32`.
+            /// Returns this unit as a `f32`.
             pub fn as_f32(&self) -> f32 {
                 self.0 as f32 / Self::FACTOR as f32
             }
 
-            /// Returns the unit as a `f64`.
+            /// Returns this unit as a `f64`.
             pub fn as_f64(&self) -> f64 {
                 self.0 as f64 / Self::FACTOR as f64
             }
 
-            /// Returns the unit as a `u8`.
+            /// Returns this unit as a `u8`.
             pub const fn as_u8(&self) -> u8 {
                 (self.0 / Self::FACTOR) as u8
             }
 
-            /// Returns the unit as a `u16`.
+            /// Returns this unit as a `u16`.
             pub const fn as_u16(&self) -> u16 {
                 (self.0 / Self::FACTOR) as u16
             }
 
-            /// Returns the unit as a `u32`.
+            /// Returns this unit as a `u32`.
             pub const fn as_u32(&self) -> u32 {
                 (self.0 / Self::FACTOR) as u32
             }
 
-            /// Returns the unit as a `u64`.
+            /// Returns this unit as a `u64`.
             pub const fn as_u64(&self) -> u64 {
                 (self.0 / Self::FACTOR) as u64
-            }
-
-            /// Returns a string containing `self.as_f64` at the availible precision.
-            pub fn as_string(&self) -> String {
-                format!("{:.}", self.as_f64())
             }
 
             /// Returns a string containing`self.as_u64()` and `Self::UNIT`.
             #[cfg(feature = "units")]
             pub fn as_string_with_unit(&self) -> String {
                 format!("{:.}{}", self.as_f64(), Self::UNIT)
-            }
-
-            /// Returns a string containing `self.as_f64()` with the given precision.
-            pub fn as_string_with_precision(&self, precision: usize) -> String {
-                format!("{:.precision$}", self.as_f64(), precision = precision)
             }
 
             /// Returns a string contaning `self.as_f64()` with the given precision and `Self::UNIT`.
@@ -153,7 +236,6 @@ macro_rules! data_impl {
             }
 
         }
-
 
         impl std::ops::AddAssign for $self {
             fn add_assign(&mut self, rhs: Self) {
@@ -270,9 +352,6 @@ macro_rules! data_impl {
         }
 
         impl From<i8> for $self {
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
-            ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
             fn from(value: i8) -> Self {
                 let value = if value.is_negative() { -value } else { value };
                 <$self>::new(value as u64 * Self::FACTOR)
@@ -280,9 +359,6 @@ macro_rules! data_impl {
         }
 
         impl From<i16> for $self {
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
-            ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
             fn from(value: i16) -> Self {
                 let value = if value.is_negative() { -value } else { value };
                 <$self>::new(value as u64 * Self::FACTOR)
@@ -290,9 +366,6 @@ macro_rules! data_impl {
         }
 
         impl From<i32> for $self {
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
-            ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
             fn from(value: i32) -> Self {
                 let value = if value.is_negative() { -value } else { value };
                 <$self>::new(value as u64 * Self::FACTOR)
@@ -300,9 +373,6 @@ macro_rules! data_impl {
         }
 
         impl From<i64> for $self {
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
-            ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
             fn from(value: i64) -> Self {
                 let value = if value.is_negative() { -value } else { value };
                 <$self>::new(value as u64 * Self::FACTOR)
@@ -310,17 +380,16 @@ macro_rules! data_impl {
         }
 
         impl From<i128> for $self {
-            #[doc = concat!("Takes in a direct amount of the unit, if you want to create ", stringify!($self), " based on bytes use [`", stringify!($self), "::new`].")]
-            ///
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
             fn from(value: i128) -> Self {
                 let value = if value.is_negative() { -value } else { value };
-                <$self>::new(value as u64 * Self::FACTOR)
+                <$self>::new(value as u64)
             }
         }
 
         impl From<f32> for $self {
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            /// Creates this unit from the absoloute value of a [f64].
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or an equivalent From trait.")]
             fn from(value: f32) -> Self {
                 let value = if value.is_sign_negative() {
                     -value
@@ -332,7 +401,9 @@ macro_rules! data_impl {
         }
 
         impl From<f64> for $self {
-            #[doc = concat!("Converts the absolute value into ", stringify!($self), ".")]
+            /// Creates this unit from the absoloute value of a [f64].
+            ///
+            #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or an equivalent From trait.")]
             fn from(value: f64) -> Self {
                 let value = if value.is_sign_negative() {
                     -value
@@ -351,7 +422,7 @@ macro_rules! data_impl {
 
         impl std::fmt::Display for $self {
             /// This displays the amout of bytes. If you want to display the unit directly use
-            #[doc= concat!("[`", stringify!($self), "::as_f64()`], or a similar casting method.")]
+            #[doc= concat!("[`", stringify!($self), "::as_f64()`] or a similar casting method.")]
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 write!(f, "{}", self.0)
             }
