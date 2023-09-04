@@ -1,3 +1,7 @@
+//! This is the source code for the Tusk application.
+//! The Tusk application is a terminal based profiler for
+//! linux based systems.
+
 use std::{error::Error, io, thread, time::Instant};
 
 use crossterm::{
@@ -12,6 +16,7 @@ use terminal::{draw::draw, App, Screen};
 
 use crate::terminal::events::{handle_event, ControlFlow};
 
+/// The `terminal` module takes care of all the user interaction happening.
 mod terminal;
 
 /// All data handiling constants are defined here.
@@ -22,20 +27,33 @@ mod datapoints {
 
 	use memu::units::MegaByte;
 
+	/// How long a tick should be.
+	/// This is 50ms in debug mode and 16 in release.
 	#[cfg(debug_assertions)]
 	pub const TICK_TIME: Duration = Duration::from_millis(50);
+	/// How long a tick should be.
+	/// This is 50ms in debug mode and 16 in release.
 	#[cfg(not(debug_assertions))]
 	pub const TICK_TIME: Duration = Duration::from_millis(16);
-	pub const EVENT_TIMEOUT: Duration = Duration::from_millis(0);
+	/// How long `event::pool` should wait for events.
+	pub const EVENT_TIMEOUT: Duration = Duration::from_millis(1);
+	/// How many datapoints for cpu usage should be collected.
 	pub const CPU_USAGE_DATAPOINTS: usize = 100;
+	/// How many datapoints for the network should be collected.
 	pub const NETWORK_DATAPOINTS: usize = 100;
+	/// The amount of megabytes displayed at minimum by the networks graphs.
 	pub const NETWORK_MINIMUM_HIGHEST_THRUPUT: MegaByte = MegaByte::from_u8(3);
+	/// How many datapoints should be collected on the tracked process.
 	pub const TRACKED_PROCESS_DATAPOINTS: usize = 100;
+	/// The amount of megabytes displayed at minimum by the tracked process.
 	pub const TRACKED_MINIMUM_HIGHEST_MEMORY: MegaByte = MegaByte::from_u8(0);
+	/// How many log messages should be keept track of.
 	pub const LOG_MESSAGES: usize = 100;
+	/// How many ticks should be tracked in debug mode.
 	pub const DEBUG_TICK_DATAPOINTS: usize = 100;
 }
 
+/// Currently hardcoded test tabs.
 pub const TABS: [Screen; 3] = [Screen::Default, Screen::Processes, Screen::Tracked];
 
 fn main() -> Result<(), Box<dyn Error>> {
@@ -126,6 +144,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 	Ok(false)
 }
 
+/// Function to set up fern logging.
 fn setup_logger() -> Result<(), fern::InitError> {
 	fern::Dispatch::new()
 		.format(|out, message, record| {

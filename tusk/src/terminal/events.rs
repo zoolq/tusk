@@ -5,6 +5,7 @@ use crossterm::event::{
 
 use super::{App, TopBar};
 
+/// Controls the flow of the app, based on user inputs.
 pub enum ControlFlow {
 	/// Indicates the program should continue.
 	Continue,
@@ -14,6 +15,7 @@ pub enum ControlFlow {
 	Quit,
 }
 
+/// Handeles user input events.
 pub fn handle_event(event: Event, app: &mut App) -> ControlFlow {
 	if let Key(key) = event {
 		if app.top_bar == TopBar::Input {
