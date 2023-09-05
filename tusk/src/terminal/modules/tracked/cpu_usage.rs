@@ -7,8 +7,11 @@ use ratatui::{
 
 use crate::{datapoints::CPU_USAGE_DATAPOINTS, terminal::App};
 
-pub fn draw_usage<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
+pub fn draw_tracked_usage<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 	let data: Vec<(f64, f64)> = app
+		.tracked
+		.as_ref()
+		.unwrap()
 		.cpu_usage
 		.iter()
 		.enumerate()

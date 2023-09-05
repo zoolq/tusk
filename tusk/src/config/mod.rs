@@ -1,6 +1,6 @@
 pub mod theme;
 
-use std::{ffi::OsString, fs::File};
+use std::ffi::OsString;
 
 use serde::{Deserialize, Serialize};
 

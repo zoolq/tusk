@@ -20,15 +20,5 @@ pub fn window_debug<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		.constraints([Constraint::Percentage(50), Constraint::Percentage(50)].as_ref())
 		.split(chunks[1]);
 
-	draw_ticks(
-		f,
-		&app.working_tick,
-		&app.real_tick,
-		ticks[0],
-		&app.refresh_tick,
-		&app.drawing_tick,
-		&app.event_tick,
-		ticks[1],
-		&app.theme,
-	);
+	draw_ticks(f, app, ticks[0], ticks[1]);
 }

@@ -1,4 +1,3 @@
-use lazy_static::lazy_static;
 use ratatui::style::{Color, Style};
 use serde::{Deserialize, Serialize};
 
@@ -19,16 +18,19 @@ pub struct Theme {
 impl Theme {
 	pub fn new() -> Self {
 		Theme {
-			window: Style::default().fg(Color::LightBlue),
-			graph_1: Style::default().fg(Color::Blue),
-			graph_2: Style::default().fg(Color::Red),
-			graph_3: Style::default().fg(Color::Yellow),
-			axis: Style::default().fg(Color::LightBlue),
-			tab: Style::default().fg(Color::DarkGray),
-			selected_tab: Style::default().fg(Color::LightBlue),
-			text: Style::default().fg(Color::LightBlue),
-			selected_text: Style::default().fg(Color::DarkGray).bg(Color::LightBlue),
-			error: Style::default().fg(Color::Red),
+			window: Style::default().fg(Color::LightBlue).bg(Color::Reset),
+			graph_1: Style::default().fg(Color::Green).bg(Color::Reset),
+			graph_2: Style::default().fg(Color::Red).bg(Color::Reset),
+			graph_3: Style::default().fg(Color::Yellow).bg(Color::Reset),
+			axis: Style::default().fg(Color::LightBlue).bg(Color::Reset),
+			tab: Style::default().fg(Color::DarkGray).bg(Color::Reset),
+			selected_tab: Style::default().fg(Color::LightBlue).bg(Color::Reset),
+			text: Style::default().fg(Color::LightBlue).bg(Color::Reset),
+			selected_text: Style::default()
+				.fg(Color::DarkGray)
+				.bg(Color::LightBlue)
+				.bg(Color::Reset),
+			error: Style::default().fg(Color::Red).bg(Color::Reset),
 		}
 	}
 }
@@ -94,4 +96,24 @@ fn selected_text_bg() -> Color {
 
 fn selected_text_fg() -> Color {
 	Color::DarkGray
+}
+
+impl Default for Theme {
+	fn default() -> Self {
+		Theme {
+			window: Style::default().fg(Color::LightBlue).bg(Color::Reset),
+			graph_1: Style::default().fg(Color::Blue).bg(Color::Reset),
+			graph_2: Style::default().fg(Color::Red).bg(Color::Reset),
+			graph_3: Style::default().fg(Color::Yellow).bg(Color::Reset),
+			axis: Style::default().fg(Color::LightBlue).bg(Color::Reset),
+			tab: Style::default().fg(Color::DarkGray).bg(Color::Reset),
+			selected_tab: Style::default().fg(Color::LightBlue).bg(Color::Reset),
+			text: Style::default().fg(Color::LightBlue).bg(Color::Reset),
+			selected_text: Style::default()
+				.fg(Color::DarkGray)
+				.bg(Color::LightBlue)
+				.bg(Color::Reset),
+			error: Style::default().fg(Color::Red).bg(Color::Reset),
+		}
+	}
 }

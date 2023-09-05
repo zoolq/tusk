@@ -184,7 +184,7 @@ impl App {
 		}
 
 		self.processes
-			.sort_by(|a, b| b.cpu_usage.partial_cmp(&a.cpu_usage).unwrap());
+			.sort_by(|a, b| a.name.partial_cmp(&b.name).unwrap());
 
 		if let Some(pid) = self.tracked_pid {
 			if let Some(tracked_process) = &mut self.tracked {

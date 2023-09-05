@@ -7,14 +7,12 @@ use crate::config::theme::Theme;
 #[derive(Debug)]
 pub enum FrameError {
 	MissingTracked,
-	NoLog,
 }
 
 impl Display for FrameError {
 	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		let s = match *self {
 			Self::MissingTracked => "no tracked process found",
-			Self::NoLog => "logging isn not enabeled",
 		};
 		write!(f, "{}", s)
 	}
@@ -29,11 +27,6 @@ pub fn draw_error<B: Backend>(f: &mut Frame<B>, error: FrameError, area: Rect, t
 			Line::from(""),
 			Line::from("No process is being tracked."),
 			Line::from("Please select a process by pressing `i`."),
-		],
-		FrameError::NoLog => vec![
-			Line::from("**Error**".red().bold()),
-			Line::from(""),
-			Line::from("Logging is not enabeled."),
 		],
 	};
 

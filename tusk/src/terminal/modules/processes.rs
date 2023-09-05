@@ -1,33 +1,46 @@
 use ratatui::{prelude::*, widgets::*};
 
-use crate::{config::theme::Theme, terminal::Process};
+use crate::terminal::App;
 
-pub fn draw_processes<B: Backend>(f: &mut Frame<B>, data: &[Process], area: Rect, theme: &Theme) {
-	let items: Vec<ListItem> = data
+pub fn draw_processes<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
+	let header_cells = ["Pid", "Name", "Memory", "Cpu", "Time", "Written", "Read"]
 		.iter()
-		.map(|i| {
-			ListItem::new(format!(
-				"{:6}: {:10} {:10} {:10} {:10} {:10} {:10}",
-				i.pid,
-				i.name,
-				i.memory.as_string_with_unit_and_precision(2),
-				i.cpu_usage,
-				i.time,
-				i.total_written,
-				i.total_read
-			))
-			.style(theme.text)
-		})
-		.collect();
+		.map(|h| Cell::from(*h).style(Style::default().fg(Color::Red)));
 
-	let items = List::new(items)
+	let header = Row::new(header_cells)
+		.style(app.theme.graph_1)
+		.height(1)
+		.bottom_margin(1);
+
+	let rows = app.processes.iter().map(|i| {
+		let cells = [
+			format!("{}", i.pid),
+			i.name.to_string(),
+			i.memory.as_string_with_unit_and_precision(2),
+			format!("{:.2}%", i.cpu_usage),
+			format!("{}", i.time),
+			format!("{}", i.total_written),
+			format!("{}", i.total_read),
+		];
+		Row::new(cells).height(1).bottom_margin(1)
+	});
+
+	let table = Table::new(rows)
+		.header(header)
 		.block(
 			Block::default()
 				.borders(Borders::ALL)
 				.title("Processes".bold())
-				.style(theme.window),
+				.style(app.theme.window),
 		)
-		.bg(Color::Reset);
+		.widths(&[
+			Constraint::Max(6),
+			Constraint::Max(20),
+			Constraint::Max(10),
+			Constraint::Max(10),
+			Constraint::Max(10),
+			Constraint::Max(10),
+		]);
 
-	f.render_widget(items, area);
+	f.render_widget(table, area);
 }

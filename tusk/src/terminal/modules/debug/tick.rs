@@ -3,26 +3,22 @@ use std::{collections::VecDeque, time::Duration};
 use ratatui::{prelude::*, symbols, text::Span, widgets::*, Frame};
 
 use crate::{
-	config::theme::Theme,
 	datapoints::{NETWORK_DATAPOINTS, TICK_TIME},
+	terminal::App,
 };
 
 /// Draws two graphs of the different tick components.
 #[allow(clippy::too_many_arguments)]
 pub fn draw_ticks<B: Backend>(
 	f: &mut Frame<B>,
-	working_data: &VecDeque<Duration>,
-	real_data: &VecDeque<Duration>,
+	app: &App,
 	full_tick_area: Rect,
-	refresh_data: &VecDeque<Duration>,
-	draw_data: &VecDeque<Duration>,
-	event_data: &VecDeque<Duration>,
 	split_tick_area: Rect,
-	theme: &Theme,
 ) {
-	let (min, max) = min_max(real_data);
+	let (min, max) = min_max(&app.real_tick);
 
-	let working_data: Vec<(f64, f64)> = working_data
+	let working_data: Vec<(f64, f64)> = app
+		.working_tick
 		.iter()
 		.enumerate()
 		.map(|(i, &d)| (i as f64, d.as_millis() as f64))
@@ -31,10 +27,11 @@ pub fn draw_ticks<B: Backend>(
 	let working_dataset = Dataset::default()
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(theme.graph_1)
+		.style(app.theme.graph_1)
 		.data(&working_data);
 
-	let real_data: Vec<(f64, f64)> = real_data
+	let real_data: Vec<(f64, f64)> = app
+		.real_tick
 		.iter()
 		.enumerate()
 		.map(|(i, &d)| (i as f64, d.as_millis() as f64))
@@ -43,35 +40,40 @@ pub fn draw_ticks<B: Backend>(
 	let real_dataset = Dataset::default()
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(theme.graph_2)
+		.style(app.theme.graph_2)
 		.data(&real_data);
 
 	let chart = Chart::new(vec![working_dataset, real_dataset])
 		.block(
 			Block::default()
-				.title("Tick Times".bold())
+				.title(Line::from(vec![
+					Span::styled("Tick Times", app.theme.window),
+					Span::styled(" (Real)", app.theme.graph_1),
+					Span::styled(" (Processing)", app.theme.graph_2),
+				]))
 				.borders(Borders::ALL)
-				.style(theme.window),
+				.style(app.theme.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(theme.axis)
+				.style(app.theme.axis)
 				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(theme.axis)
+				.style(app.theme.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0ms", theme.text),
-					Span::styled(format!("{:.0}ms", (min + max) / 2.0), theme.text),
-					Span::styled(format!("{:.0}ms", max), theme.text),
+					Span::styled("0ms", app.theme.text),
+					Span::styled(format!("{:.0}ms", (min + max) / 2.0), app.theme.text),
+					Span::styled(format!("{:.0}ms", max), app.theme.text),
 				]),
 		);
 
 	f.render_widget(chart, full_tick_area);
 
-	let refresh_data: Vec<(f64, f64)> = refresh_data
+	let refresh_data: Vec<(f64, f64)> = app
+		.refresh_tick
 		.iter()
 		.enumerate()
 		.map(|(i, &d)| (i as f64, d.as_millis() as f64))
@@ -80,10 +82,11 @@ pub fn draw_ticks<B: Backend>(
 	let refresh_dataset = Dataset::default()
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(theme.graph_1)
+		.style(app.theme.graph_1)
 		.data(&refresh_data);
 
-	let draw_data: Vec<(f64, f64)> = draw_data
+	let draw_data: Vec<(f64, f64)> = app
+		.drawing_tick
 		.iter()
 		.enumerate()
 		.map(|(i, &d)| (i as f64, d.as_millis() as f64))
@@ -92,10 +95,11 @@ pub fn draw_ticks<B: Backend>(
 	let draw_dataset = Dataset::default()
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(theme.graph_2)
+		.style(app.theme.graph_2)
 		.data(&draw_data);
 
-	let event_data: Vec<(f64, f64)> = event_data
+	let event_data: Vec<(f64, f64)> = app
+		.event_tick
 		.iter()
 		.enumerate()
 		.map(|(i, &d)| (i as f64, d.as_millis() as f64))
@@ -104,29 +108,34 @@ pub fn draw_ticks<B: Backend>(
 	let event_dataset = Dataset::default()
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
-		.style(theme.graph_3)
+		.style(app.theme.graph_3)
 		.data(&event_data);
 
 	let chart = Chart::new(vec![refresh_dataset, draw_dataset, event_dataset])
 		.block(
 			Block::default()
-				.title("Tick Times".bold())
+				.title(Line::from(vec![
+					Span::styled("Tick Times", app.theme.window),
+					Span::styled(" (Refresh)", app.theme.graph_1),
+					Span::styled(" (Draw)", app.theme.graph_2),
+					Span::styled(" (Event)", app.theme.graph_3),
+				]))
 				.borders(Borders::ALL)
-				.style(theme.window),
+				.style(app.theme.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(theme.axis)
+				.style(app.theme.axis)
 				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(theme.axis)
+				.style(app.theme.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0ms", theme.text),
-					Span::styled(format!("{:.0}ms", (min + max) / 2.0), theme.text),
-					Span::styled(format!("{:.0}ms", max), theme.text),
+					Span::styled("0ms", app.theme.text),
+					Span::styled(format!("{:.0}ms", (min + max) / 2.0), app.theme.text),
+					Span::styled(format!("{:.0}ms", max), app.theme.text),
 				]),
 		);
 
