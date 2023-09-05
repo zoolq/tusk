@@ -17,7 +17,8 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
-            #[doc = concat!("assert_eq!(", stringify!($self), "::UNIT,", stringify!($unit), ");")]
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("assert_eq!(", stringify!($self), "::UNIT, ", stringify!($unit), ");")]
             /// ```
             #[cfg(feature = "units")]
             pub const fn get_unit() -> &'static str {
@@ -28,9 +29,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_u8(1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
@@ -42,9 +45,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_u16(1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
@@ -56,9 +61,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_u32(1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
@@ -70,9 +77,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_u64(1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
@@ -84,9 +93,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_u128(1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
@@ -98,9 +109,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_i8(-1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
@@ -113,9 +126,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_i16(-1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
@@ -128,9 +143,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_i32(-1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
@@ -143,9 +160,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_i64(-1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]
@@ -158,9 +177,11 @@ macro_rules! data_impl {
             ///
             /// # Examples
             /// ```
+            #[doc = concat!("# use memu::units::", stringify!($self), ";")]
+            #[doc = concat!("# use memu::constants::", stringify!($factor), ";")]
             #[doc = concat!("let unit = ", stringify!($self), "::from_i128(-1);")]
             ///
-            #[doc = concat!("assert_eq!(unit, ", stringify!($factor), ");")]
+            #[doc = concat!("assert_eq!(unit, ",stringify!($self),"::new(", stringify!($factor), "));")]
             /// ```
             ///
             #[doc = concat!("Note: this function takes in a direct amount of the unit, if you want to create ", stringify!($self), " from bytes use [`", stringify!($self), "::new`] or the equivalent [`From`] trait")]

@@ -8,85 +8,46 @@ use crate::{
 	datapoints::{NETWORK_DATAPOINTS, NETWORK_MINIMUM_HIGHEST_THRUPUT},
 };
 
-/// Draws two network graphs in the given areas
+use super::legend::draw_legend;
+
+/// Draws two network graphs in the given area
 pub fn draw_network<B: Backend>(
 	f: &mut Frame<B>,
 	in_data: &VecDeque<MegaByte>,
 	out_data: &VecDeque<MegaByte>,
-	in_area: Rect,
-	out_area: Rect,
-	theme: &Theme,
-) {
-	draw_out(f, out_data, out_area, theme);
-	draw_in(f, in_data, in_area, theme);
-}
-
-/// Draws
-pub fn draw_out<B: Backend>(
-	f: &mut Frame<B>,
-	data: &VecDeque<MegaByte>,
 	area: Rect,
 	theme: &Theme,
 ) {
-	let (min, max) = min_max(data);
+	let (min, max) = min_max(in_data, out_data);
 
-	let data: Vec<(f64, f64)> = data
+	let out_data: Vec<(f64, f64)> = out_data
 		.iter()
 		.enumerate()
 		.map(|(i, &d)| (i as f64, d.as_f64()))
 		.collect();
 
-	let dataset = Dataset::default()
-		.marker(symbols::Marker::Braille)
-		.graph_type(GraphType::Line)
-		.style(theme.graph_2)
-		.data(&data);
-
-	let chart = Chart::new(vec![dataset])
-		.block(
-			Block::default()
-				.title("Network Out (MB/s)".bold())
-				.borders(Borders::ALL)
-				.border_style(theme.window),
-		)
-		.x_axis(
-			Axis::default()
-				.style(theme.axis)
-				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
-		)
-		.y_axis(
-			Axis::default()
-				.style(theme.axis)
-				.bounds([min, max])
-				.labels(vec![
-					Span::styled("0", theme.text),
-					Span::styled(format!("{:.0}", (min + max) / 2.0), theme.text),
-					Span::styled(format!("{:.0}", max), theme.text),
-				]),
-		);
-
-	f.render_widget(chart, area);
-}
-
-pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Rect, theme: &Theme) {
-	let (min, max) = min_max(data);
-
-	let data: Vec<(f64, f64)> = data
-		.iter()
-		.enumerate()
-		.map(|(i, &d)| (i as f64, d.as_f64()))
-		.collect();
-
-	let dataset = Dataset::default()
+	let out_dataset = Dataset::default()
 		.marker(symbols::Marker::Braille)
 		.graph_type(GraphType::Line)
 		.style(theme.graph_1)
-		.data(&data);
+		.data(&out_data);
 
-	let chart = Chart::new(vec![dataset])
+	let in_data: Vec<(f64, f64)> = in_data
+		.iter()
+		.enumerate()
+		.map(|(i, &d)| (i as f64, d.as_f64()))
+		.collect();
+
+	let in_dataset = Dataset::default()
+		.marker(symbols::Marker::Braille)
+		.graph_type(GraphType::Line)
+		.style(theme.graph_2)
+		.data(&in_data);
+
+	let chart = Chart::new(vec![in_dataset, out_dataset])
 		.block(
 			Block::default()
-				.title("Network In (MB/s)".bold())
+				.title("Network (MB/s)".bold())
 				.borders(Borders::ALL)
 				.border_style(theme.window),
 		)
@@ -106,15 +67,42 @@ pub fn draw_in<B: Backend>(f: &mut Frame<B>, data: &VecDeque<MegaByte>, area: Re
 				]),
 		);
 
+	let chunks = Layout::default()
+		.constraints([Constraint::Max(4), Constraint::Max(4), Constraint::Max(4)].as_ref())
+		.direction(Direction::Vertical)
+		.split(area);
+
+	let chunks = Layout::default()
+		.direction(Direction::Horizontal)
+		.constraints([Constraint::Percentage(100), Constraint::Min(7)].as_ref())
+		.split(chunks[0]);
+
 	f.render_widget(chart, area);
+
+	draw_legend(
+		f,
+		vec![
+			("out".to_owned(), theme.graph_1),
+			("in".to_owned(), theme.graph_2),
+		],
+		theme,
+		chunks[1],
+	)
 }
 
-fn min_max(data: &VecDeque<MegaByte>) -> (f64, f64) {
+fn min_max(data1: &VecDeque<MegaByte>, data2: &VecDeque<MegaByte>) -> (f64, f64) {
 	let min = 0.0;
-	let max = data
+	let max1 = data1
 		.iter()
 		.max()
 		.unwrap_or(&NETWORK_MINIMUM_HIGHEST_THRUPUT);
+
+	let max2 = data2
+		.iter()
+		.max()
+		.unwrap_or(&NETWORK_MINIMUM_HIGHEST_THRUPUT);
+
+	let max = if max1 < max2 { max1 } else { max2 };
 	let max = if max > &NETWORK_MINIMUM_HIGHEST_THRUPUT {
 		*max
 	} else {

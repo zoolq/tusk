@@ -29,7 +29,6 @@ pub fn window_default<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		&app.network_in,
 		&app.network_out,
 		network_chunks[0],
-		network_chunks[1],
 		&app.theme,
 	);
 	draw_stats(f, app, chunks[0])

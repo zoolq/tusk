@@ -27,4 +27,4 @@ Input:
 
 - `Esc`: Escape the input
 
-- `Left` | `Right`: Move the cursor left and right respectivley
+- `Left` | `Right`: Move the cursor left and right respectively

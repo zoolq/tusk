@@ -1,13 +1,13 @@
 [package]
 name = "memu"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 description = "Implementations of memory units and working with them"
 authors = ["Felix Scholz <mr.felix.scholz@web.de>"]
 license = "MIT"
 readme = "README.md"
-homepage = "https://github.com/zoolq/tusk/tree/master/tusk"
-repository = "https://github.com/zoolq/tusk/tree/master/tusk"
+homepage = "https://github.com/zoolq/tusk/tree/master/memu"
+repository = "https://github.com/zoolq/tusk/tree/master/memu"
 keywords = ["units", "memory", "measure", "computer-sience", "memory-units"]
 categories = ["science", "mathematics"]
 include = ["src/", "README.md"]
