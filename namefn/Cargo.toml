@@ -1,0 +1,19 @@
+[package]
+name = "namefn"
+version = "0.1.0"
+edition = "2021"
+description = "Adds a macro to retrive the name of the function"
+authors = ["Felix Scholz <mr.felix.scholz@web.de>"]
+license = "MIT"
+readme = "README.md"
+include = ["src/", "README.md"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+proc-macro = true
+
+[dependencies]
+proc-macro2 = "1.0.66"
+quote = "1.0.33"
+syn = { version = "2.0.31", features = ["full"] }

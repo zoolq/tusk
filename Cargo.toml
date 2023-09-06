@@ -1,2 +1,2 @@
 [workspace]
-members = ["tusk", "memu"]
+members = ["tusk", "memu", "namefn"]
