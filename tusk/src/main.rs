@@ -30,12 +30,6 @@ mod datapoints {
 	use memu::units::MegaByte;
 
 	/// How long a tick should be.
-	/// This is 50ms in debug mode and 16 in release.
-	#[cfg(debug_assertions)]
-	pub const TICK_TIME: Duration = Duration::from_millis(50);
-	/// How long a tick should be.
-	/// This is 50ms in debug mode and 16 in release.
-	#[cfg(not(debug_assertions))]
 	pub const TICK_TIME: Duration = Duration::from_millis(50);
 	/// How long `event::pool` should wait for events.
 	pub const EVENT_TIMEOUT: Duration = Duration::from_millis(1);
@@ -53,14 +47,14 @@ mod datapoints {
 	pub const LOG_MESSAGES: usize = 100;
 	/// How many ticks should be tracked in debug mode.
 	pub const DEBUG_TICK_DATAPOINTS: usize = 100;
+	/// How many log events should be keep in the log.
+	pub const TRACKED_LOG_EVENTS: usize = 30;
 }
 
 /// Currently hardcoded test tabs.
 pub const TABS: [Screen; 3] = [Screen::Default, Screen::Processes, Screen::Tracked];
 
 fn main() -> Result<(), Box<dyn Error>> {
-	setup_logger().unwrap_or(());
-
 	enable_raw_mode()?;
 	let mut stdout = io::stdout();
 
@@ -88,7 +82,6 @@ fn main() -> Result<(), Box<dyn Error>> {
 		LeaveAlternateScreen,
 		DisableMouseCapture
 	)?;
-	terminal.show_cursor()?;
 
 	if let Err(error) = app_output {
 		println!("Exited with error: {}", error);
@@ -97,7 +90,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 	Ok(())
 }
 
-/// If this returns true a reaload should be initiated
+/// If this returns true a reload should be initiated
 ///
 /// The order of calls should always be this way:
 ///
@@ -126,7 +119,7 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 		app.draw_tick(draw_tick.elapsed());
 
 		let event_tick = Instant::now();
-		if event::poll(EVENT_TIMEOUT)? {
+		if event::poll(EVENT_TIMEOUT).unwrap_or(false) {
 			let event = event::read()?;
 			let flow = handle_event(event, &mut app);
 			match flow {
@@ -144,20 +137,4 @@ fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 		app.real_tick(tick_start.elapsed());
 	}
 	Ok(false)
-}
-
-/// Function to set up fern logging.
-fn setup_logger() -> Result<(), fern::InitError> {
-	fern::Dispatch::new()
-		.format(|out, message, record| {
-			out.finish(format_args!(
-				"[{} {}] {}",
-				record.level(),
-				record.target(),
-				message
-			))
-		})
-		.chain(fern::log_file("output.log")?)
-		.apply()?;
-	Ok(())
 }

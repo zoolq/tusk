@@ -27,7 +27,8 @@ use sysinfo::{CpuExt, Pid, PidExt, Process as Proc, ProcessExt, ProcessStatus, S
 use crate::{
 	config::theme::Theme,
 	datapoints::{
-		CPU_USAGE_DATAPOINTS, DEBUG_TICK_DATAPOINTS, NETWORK_DATAPOINTS, TRACKED_PROCESS_DATAPOINTS,
+		CPU_USAGE_DATAPOINTS, DEBUG_TICK_DATAPOINTS, NETWORK_DATAPOINTS, TRACKED_LOG_EVENTS,
+		TRACKED_PROCESS_DATAPOINTS,
 	},
 	TABS,
 };
@@ -73,6 +74,7 @@ pub enum TopBar {
 /// The main app struct handeling all app relevent information.
 pub struct App {
 	sys: System,
+	pub log: VecDeque<Log>,
 	pub theme: Theme,
 	pub programs_scroll_state: ScrollbarState,
 	tabs_index: usize,
@@ -113,6 +115,7 @@ impl App {
 		sys.refresh_all();
 
 		let mut app = App {
+			log: VecDeque::with_capacity(TRACKED_LOG_EVENTS),
 			theme: Theme::new(),
 			programs_scroll_state: ScrollbarState::default(),
 			tabs_index: 0,
@@ -356,6 +359,10 @@ impl App {
 		}
 		self.event_tick.push_back(tick);
 	}
+
+	pub fn log(&mut self, log: Log) {
+		self.log.push_back(log);
+	}
 }
 
 /// A tracked process.
@@ -460,5 +467,16 @@ impl Process {
 			total_read,
 			total_written,
 		}
+	}
+}
+
+pub struct Log {
+	name: String,
+	caller: String,
+}
+
+impl Log {
+	pub fn new(name: String, caller: String) -> Self {
+		Log { name, caller }
 	}
 }
