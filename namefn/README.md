@@ -16,7 +16,6 @@ use namefn::name;
 fn main() {
     assert_eq!("main", NAME);
 }
-# main()
 ```
 
 You can also crate a custom function name:
@@ -28,7 +27,6 @@ use namefn::name;
 fn uncool_name() {
     assert_eq!("cool_name", NAME);
 }
-# uncool_name()
 ```
 
 Here the name is `cool_name` instead of `uncool_name`.
@@ -42,7 +40,6 @@ use namefn::name;
 fn main() {
     assert_eq!("main", FUNCTION);
 }
-# main()
 ```
 
 The name is still `main` but the constant is now called `FUNCTION`.
