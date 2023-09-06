@@ -1,6 +1,6 @@
 # memu
 
-The memu crate provides rust implementations of digital storage (or memory) units.
+The [memu](https://crates.io/crates/memu) crate provides rust implementations of digital storage (or memory) units.
 The maximum amount of storage is `18446.744073709553 Petabyte`, conversion between units always happens with a factor of `1024`.
 
 The create also provides conversions between units and information about the units such as, unit suffixes and scale factors. As well as optional serde compatibility.
