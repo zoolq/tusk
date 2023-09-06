@@ -1,9 +1,10 @@
 # tusk
-Terminal based cpu profiler for Linux written in Rust. Tusk provides low level usage stats for cores.
 
-This repository includes the main tusk application as well as the memu crate for working with units of data.
+Terminal based cpu profiler for Linux written in Rust. Tusk provides low level usage stats for your linux machine.
 
-# Keybinds
+This repository includes the main tusk application as well as the memu crate for working with units of data and the namefn crate for retreving the name of a function.
+
+## Keybinds
 
 Application:
 
