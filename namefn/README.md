@@ -12,7 +12,7 @@ The basic functionality consists of getting the functions name via a const varia
 ```Rust
 use namefn::name;
 
-#[name]
+#[namefn]
 fn main() {
     assert_eq!("main", NAME);
 }
@@ -23,7 +23,7 @@ You can also crate a custom function name:
 ```Rust
 use namefn::name;
 
-#[name(alias = "cool_name")]
+#[namefn(alias = "cool_name")]
 fn uncool_name() {
     assert_eq!("cool_name", NAME);
 }
@@ -36,7 +36,7 @@ If you for some reason already have a constant called name you can also rename t
 ```Rust
 use namefn::name;
 
-#[name(const = FUNCTION)]
+#[namefn(const = FUNCTION)]
 fn main() {
     assert_eq!("main", FUNCTION);
 }
