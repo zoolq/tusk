@@ -17,3 +17,4 @@ color-to-tui = "0.3.0"
 serde_yaml = "0.9.25"
 log = { version = "0.4.20", features = ["std"] }
 fern = "0.6.2"
+namefn = { path = "../namefn" }

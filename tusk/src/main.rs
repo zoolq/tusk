@@ -4,6 +4,7 @@
 
 use std::{error::Error, io, thread, time::Instant};
 
+use config::theme::Theme;
 use crossterm::{
 	event::{self, DisableMouseCapture},
 	execute,
@@ -11,6 +12,7 @@ use crossterm::{
 };
 
 use datapoints::{EVENT_TIMEOUT, TICK_TIME};
+use namefn::namefn;
 use ratatui::prelude::*;
 use terminal::{draw::draw, App, Screen};
 
@@ -50,6 +52,8 @@ mod datapoints {
 	/// How many log events should be keep in the log.
 	pub const TRACKED_LOG_EVENTS: usize = 30;
 }
+
+pub const THEME: Theme = Theme::new();
 
 /// Currently hardcoded test tabs.
 pub const TABS: [Screen; 3] = [Screen::Default, Screen::Processes, Screen::Tracked];
@@ -96,9 +100,7 @@ fn main() -> Result<(), Box<dyn Error>> {
 ///
 /// Prior to looping:
 ///
-/// - New system
-/// - New data
-/// - New storage
+/// - new app
 ///
 /// In each tick:
 ///
@@ -106,16 +108,19 @@ fn main() -> Result<(), Box<dyn Error>> {
 /// - draw
 /// - handle keys
 ///
+#[namefn]
 fn run_app<B: Backend>(terminal: &mut Terminal<B>) -> io::Result<bool> {
 	let mut app = App::new();
 
 	loop {
+		app.log("New tick", NAME);
+
 		let tick_start = Instant::now();
 
 		app.refresh();
 
 		let draw_tick = Instant::now();
-		draw(terminal, &app)?;
+		draw(terminal, &mut app)?;
 		app.draw_tick(draw_tick.elapsed());
 
 		let event_tick = Instant::now();

@@ -2,6 +2,7 @@ use crossterm::event::{
 	Event::{self, Key},
 	KeyCode::{BackTab, Backspace, Char, Enter, Esc, Left, Right, Tab, F},
 };
+use namefn::namefn;
 
 use super::{App, TopBar};
 
@@ -16,8 +17,11 @@ pub enum ControlFlow {
 }
 
 /// Handeles user input events.
+#[namefn]
 pub fn handle_event(event: Event, app: &mut App) -> ControlFlow {
 	if let Key(key) = event {
+		app.log("Key event", NAME);
+
 		if app.top_bar == TopBar::Input {
 			match key.code {
 				Char(ch) => app.input_type(ch),

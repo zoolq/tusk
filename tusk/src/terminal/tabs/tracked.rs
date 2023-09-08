@@ -30,6 +30,6 @@ pub fn window_tracked<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		draw_tracked_usage(f, app, chunks_middle_split[0]);
 		draw_tracked_memory(f, app, chunks_middle_split[1]);
 	} else {
-		draw_error(f, MissingTracked, area, &app.theme);
+		draw_error(f, MissingTracked, area);
 	}
 }

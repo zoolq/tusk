@@ -1,12 +1,17 @@
-use ratatui::style::{Color, Style};
+use ratatui::{
+	style::{Color, Style},
+	symbols::Marker,
+};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Copy)]
 pub struct Theme {
 	pub window: Style,
+	pub graph_style: Marker,
 	pub graph_1: Style,
 	pub graph_2: Style,
 	pub graph_3: Style,
+	pub header: Style,
 	pub axis: Style,
 	pub tab: Style,
 	pub selected_tab: Style,
@@ -16,21 +21,23 @@ pub struct Theme {
 }
 
 impl Theme {
-	pub fn new() -> Self {
+	pub const fn new() -> Self {
 		Theme {
-			window: Style::default().fg(Color::LightBlue).bg(Color::Reset),
-			graph_1: Style::default().fg(Color::Green).bg(Color::Reset),
-			graph_2: Style::default().fg(Color::Red).bg(Color::Reset),
-			graph_3: Style::default().fg(Color::Yellow).bg(Color::Reset),
-			axis: Style::default().fg(Color::LightBlue).bg(Color::Reset),
-			tab: Style::default().fg(Color::DarkGray).bg(Color::Reset),
-			selected_tab: Style::default().fg(Color::LightBlue).bg(Color::Reset),
-			text: Style::default().fg(Color::LightBlue).bg(Color::Reset),
-			selected_text: Style::default()
+			window: Style::new().fg(Color::LightBlue).bg(Color::Reset),
+			graph_style: Marker::Braille,
+			graph_1: Style::new().fg(Color::Green).bg(Color::Reset),
+			graph_2: Style::new().fg(Color::Red).bg(Color::Reset),
+			graph_3: Style::new().fg(Color::Yellow).bg(Color::Reset),
+			header: Style::new().fg(Color::LightBlue).bg(Color::Reset),
+			axis: Style::new().fg(Color::LightBlue).bg(Color::Reset),
+			tab: Style::new().fg(Color::DarkGray).bg(Color::Reset),
+			selected_tab: Style::new().fg(Color::LightBlue).bg(Color::Reset),
+			text: Style::new().fg(Color::LightBlue).bg(Color::Reset),
+			selected_text: Style::new()
 				.fg(Color::DarkGray)
 				.bg(Color::LightBlue)
 				.bg(Color::Reset),
-			error: Style::default().fg(Color::Red).bg(Color::Reset),
+			error: Style::new().fg(Color::Red).bg(Color::Reset),
 		}
 	}
 }
@@ -102,9 +109,11 @@ impl Default for Theme {
 	fn default() -> Self {
 		Theme {
 			window: Style::default().fg(Color::LightBlue).bg(Color::Reset),
-			graph_1: Style::default().fg(Color::Blue).bg(Color::Reset),
+			graph_style: Marker::Braille,
+			graph_1: Style::default().fg(Color::Green).bg(Color::Reset),
 			graph_2: Style::default().fg(Color::Red).bg(Color::Reset),
 			graph_3: Style::default().fg(Color::Yellow).bg(Color::Reset),
+			header: Style::default().fg(Color::LightBlue).bg(Color::Reset),
 			axis: Style::default().fg(Color::LightBlue).bg(Color::Reset),
 			tab: Style::default().fg(Color::DarkGray).bg(Color::Reset),
 			selected_tab: Style::default().fg(Color::LightBlue).bg(Color::Reset),

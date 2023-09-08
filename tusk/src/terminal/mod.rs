@@ -21,14 +21,15 @@ use memu::{
 	units::{KiloByte, MegaByte},
 	MemoryUnit,
 };
+use namefn::namefn;
 use ratatui::widgets::ScrollbarState;
 use sysinfo::{CpuExt, Pid, PidExt, Process as Proc, ProcessExt, ProcessStatus, System, SystemExt};
 
 use crate::{
 	config::theme::Theme,
 	datapoints::{
-		CPU_USAGE_DATAPOINTS, DEBUG_TICK_DATAPOINTS, NETWORK_DATAPOINTS, TRACKED_LOG_EVENTS,
-		TRACKED_PROCESS_DATAPOINTS,
+		CPU_USAGE_DATAPOINTS, DEBUG_TICK_DATAPOINTS, LOG_MESSAGES, NETWORK_DATAPOINTS,
+		TRACKED_LOG_EVENTS, TRACKED_PROCESS_DATAPOINTS,
 	},
 	TABS,
 };
@@ -36,7 +37,7 @@ use crate::{
 use self::app_util::{compute_frequency, compute_in, compute_out, compute_usage, per_second};
 
 /// Defines which screen is drawn.
-#[derive(Default, Clone, Copy, PartialEq, Eq)]
+#[derive(Default, Clone, Copy, PartialEq, Eq, Debug)]
 pub enum Screen {
 	/// The default screen, a bit of everything.
 	#[default]
@@ -109,6 +110,7 @@ pub struct App {
 
 impl App {
 	/// Creates a new app.
+	#[namefn]
 	pub fn new() -> Self {
 		let mut sys = System::new_all();
 
@@ -142,13 +144,18 @@ impl App {
 			sys,
 		};
 
+		app.log("New app", NAME);
+
 		app.refresh();
 
 		app
 	}
 
 	/// Refreshes the data.
+	#[namefn]
 	pub fn refresh(&mut self) {
+		self.log("Refreshed app", NAME);
+
 		let tick = Instant::now();
 
 		self.sys.refresh_cpu();
@@ -206,6 +213,8 @@ impl App {
 			}
 		}
 
+		self.tabs_index %= self.tabs.len();
+
 		if self.refresh_tick.len() == DEBUG_TICK_DATAPOINTS {
 			self.refresh_tick.pop_front();
 		}
@@ -215,8 +224,8 @@ impl App {
 
 	/// Gets the current tab.
 	pub fn current_tab(&self) -> Screen {
-		let tabs_index = self.tabs_index % self.tabs.len();
-		self.tabs[tabs_index]
+		let index = self.tabs_index % self.tabs.len();
+		self.tabs[index]
 	}
 
 	/// Increments the tab index by 1.
@@ -360,8 +369,15 @@ impl App {
 		self.event_tick.push_back(tick);
 	}
 
-	pub fn log(&mut self, log: Log) {
-		self.log.push_back(log);
+	pub fn log<T, U>(&mut self, message: T, caller: U)
+	where
+		T: Into<String>,
+		U: Into<String>,
+	{
+		if self.log.len() == LOG_MESSAGES {
+			self.log.pop_front();
+		}
+		self.log.push_back(Log::new(message.into(), caller.into()));
 	}
 }
 
@@ -471,12 +487,12 @@ impl Process {
 }
 
 pub struct Log {
-	name: String,
+	message: String,
 	caller: String,
 }
 
 impl Log {
-	pub fn new(name: String, caller: String) -> Self {
-		Log { name, caller }
+	pub fn new(message: String, caller: String) -> Self {
+		Log { message, caller }
 	}
 }

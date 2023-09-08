@@ -1,10 +1,11 @@
 use std::{collections::VecDeque, time::Duration};
 
-use ratatui::{prelude::*, symbols, text::Span, widgets::*, Frame};
+use ratatui::{prelude::*, text::Span, widgets::*, Frame};
 
 use crate::{
 	datapoints::{NETWORK_DATAPOINTS, TICK_TIME},
 	terminal::App,
+	THEME,
 };
 
 /// Draws two graphs of the different tick components.
@@ -25,9 +26,9 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let working_dataset = Dataset::default()
-		.marker(symbols::Marker::Braille)
+		.marker(THEME.graph_style)
 		.graph_type(GraphType::Line)
-		.style(app.theme.graph_1)
+		.style(THEME.graph_1)
 		.data(&working_data);
 
 	let real_data: Vec<(f64, f64)> = app
@@ -38,35 +39,35 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let real_dataset = Dataset::default()
-		.marker(symbols::Marker::Braille)
+		.marker(THEME.graph_style)
 		.graph_type(GraphType::Line)
-		.style(app.theme.graph_2)
+		.style(THEME.graph_2)
 		.data(&real_data);
 
 	let chart = Chart::new(vec![working_dataset, real_dataset])
 		.block(
 			Block::default()
 				.title(Line::from(vec![
-					Span::styled("Tick Times", app.theme.window),
-					Span::styled(" (Real)", app.theme.graph_1),
-					Span::styled(" (Processing)", app.theme.graph_2),
+					Span::styled("Tick Times", THEME.window),
+					Span::styled(" (Real)", THEME.graph_1),
+					Span::styled(" (Processing)", THEME.graph_2),
 				]))
 				.borders(Borders::ALL)
-				.style(app.theme.window),
+				.style(THEME.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(app.theme.axis)
+				.style(THEME.axis)
 				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(app.theme.axis)
+				.style(THEME.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0ms", app.theme.text),
-					Span::styled(format!("{:.0}ms", (min + max) / 2.0), app.theme.text),
-					Span::styled(format!("{:.0}ms", max), app.theme.text),
+					Span::styled("0ms", THEME.text),
+					Span::styled(format!("{:.0}ms", (min + max) / 2.0), THEME.text),
+					Span::styled(format!("{:.0}ms", max), THEME.text),
 				]),
 		);
 
@@ -80,9 +81,9 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let refresh_dataset = Dataset::default()
-		.marker(symbols::Marker::Braille)
+		.marker(THEME.graph_style)
 		.graph_type(GraphType::Line)
-		.style(app.theme.graph_1)
+		.style(THEME.graph_1)
 		.data(&refresh_data);
 
 	let draw_data: Vec<(f64, f64)> = app
@@ -93,9 +94,9 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let draw_dataset = Dataset::default()
-		.marker(symbols::Marker::Braille)
+		.marker(THEME.graph_style)
 		.graph_type(GraphType::Line)
-		.style(app.theme.graph_2)
+		.style(THEME.graph_2)
 		.data(&draw_data);
 
 	let event_data: Vec<(f64, f64)> = app
@@ -106,36 +107,36 @@ pub fn draw_ticks<B: Backend>(
 		.collect();
 
 	let event_dataset = Dataset::default()
-		.marker(symbols::Marker::Braille)
+		.marker(THEME.graph_style)
 		.graph_type(GraphType::Line)
-		.style(app.theme.graph_3)
+		.style(THEME.graph_3)
 		.data(&event_data);
 
 	let chart = Chart::new(vec![refresh_dataset, draw_dataset, event_dataset])
 		.block(
 			Block::default()
 				.title(Line::from(vec![
-					Span::styled("Tick Times", app.theme.window),
-					Span::styled(" (Refresh)", app.theme.graph_1),
-					Span::styled(" (Draw)", app.theme.graph_2),
-					Span::styled(" (Event)", app.theme.graph_3),
+					Span::styled("Tick Times", THEME.window),
+					Span::styled(" (Refresh)", THEME.graph_1),
+					Span::styled(" (Draw)", THEME.graph_2),
+					Span::styled(" (Event)", THEME.graph_3),
 				]))
 				.borders(Borders::ALL)
-				.style(app.theme.window),
+				.style(THEME.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(app.theme.axis)
+				.style(THEME.axis)
 				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(app.theme.axis)
+				.style(THEME.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0ms", app.theme.text),
-					Span::styled(format!("{:.0}ms", (min + max) / 2.0), app.theme.text),
-					Span::styled(format!("{:.0}ms", max), app.theme.text),
+					Span::styled("0ms", THEME.text),
+					Span::styled(format!("{:.0}ms", (min + max) / 2.0), THEME.text),
+					Span::styled(format!("{:.0}ms", max), THEME.text),
 				]),
 		);
 

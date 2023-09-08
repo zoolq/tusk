@@ -6,6 +6,7 @@ use ratatui::{prelude::*, widgets::*};
 use crate::{
 	datapoints::{TRACKED_MINIMUM_HIGHEST_MEMORY, TRACKED_PROCESS_DATAPOINTS},
 	terminal::App,
+	THEME,
 };
 
 pub fn draw_tracked_memory<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
@@ -22,9 +23,9 @@ pub fn draw_tracked_memory<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) 
 		.collect();
 
 	let dataset = Dataset::default()
-		.marker(Marker::Braille)
+		.marker(THEME.graph_style)
 		.graph_type(GraphType::Line)
-		.style(app.theme.graph_1)
+		.style(THEME.graph_1)
 		.data(&data);
 
 	let chart = Chart::new(vec![dataset])
@@ -32,20 +33,20 @@ pub fn draw_tracked_memory<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) 
 			Block::default()
 				.title("Memory Usage (MB)".bold())
 				.borders(Borders::ALL)
-				.border_style(app.theme.window),
+				.border_style(THEME.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(app.theme.axis)
+				.style(THEME.axis)
 				.bounds([0.0, TRACKED_PROCESS_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(app.theme.axis)
+				.style(THEME.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled(format!("{:.0}", min), app.theme.text),
-					Span::styled(format!("{:.0}", max), app.theme.text),
+					Span::styled(format!("{:.0}", min), THEME.text),
+					Span::styled(format!("{:.0}", max), THEME.text),
 				]),
 		);
 

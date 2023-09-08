@@ -1,14 +1,14 @@
 use ratatui::{prelude::*, widgets::*};
 
-use crate::terminal::App;
+use crate::{terminal::App, THEME};
 
 pub fn draw_processes<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 	let header_cells = ["Pid", "Name", "Memory", "Cpu", "Time", "Written", "Read"]
 		.iter()
-		.map(|h| Cell::from(*h).style(Style::default().fg(Color::Red)));
+		.map(|h| Cell::from(*h).style(THEME.header));
 
 	let header = Row::new(header_cells)
-		.style(app.theme.graph_1)
+		.style(THEME.graph_1)
 		.height(1)
 		.bottom_margin(1);
 
@@ -31,7 +31,7 @@ pub fn draw_processes<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 			Block::default()
 				.borders(Borders::ALL)
 				.title("Processes".bold())
-				.style(app.theme.window),
+				.style(THEME.window),
 		)
 		.widths(&[
 			Constraint::Max(6),

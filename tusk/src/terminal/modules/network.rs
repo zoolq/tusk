@@ -1,11 +1,12 @@
 use std::collections::VecDeque;
 
 use memu::units::MegaByte;
-use ratatui::{prelude::*, symbols, text::Span, widgets::*, Frame};
+use ratatui::{prelude::*, text::Span, widgets::*, Frame};
 
 use crate::{
 	datapoints::{NETWORK_DATAPOINTS, NETWORK_MINIMUM_HIGHEST_THRUPUT},
 	terminal::App,
+	THEME,
 };
 
 /// Draws two network graphs in the given area
@@ -20,9 +21,9 @@ pub fn draw_network<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		.collect();
 
 	let out_dataset = Dataset::default()
-		.marker(symbols::Marker::Braille)
+		.marker(THEME.graph_style)
 		.graph_type(GraphType::Line)
-		.style(app.theme.graph_1)
+		.style(THEME.graph_1)
 		.data(&out_data);
 
 	let in_data: Vec<(f64, f64)> = app
@@ -33,9 +34,9 @@ pub fn draw_network<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		.collect();
 
 	let in_dataset = Dataset::default()
-		.marker(symbols::Marker::Braille)
+		.marker(THEME.graph_style)
 		.graph_type(GraphType::Line)
-		.style(app.theme.graph_2)
+		.style(THEME.graph_2)
 		.data(&in_data);
 
 	let chart = Chart::new(vec![in_dataset, out_dataset])
@@ -43,21 +44,21 @@ pub fn draw_network<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 			Block::default()
 				.title("Network (MB/s)".bold())
 				.borders(Borders::ALL)
-				.border_style(app.theme.window),
+				.border_style(THEME.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(app.theme.axis)
+				.style(THEME.axis)
 				.bounds([0.0, NETWORK_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(app.theme.axis)
+				.style(THEME.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled("0", app.theme.text),
-					Span::styled(format!("{:.0}", (min + max) / 2.0), app.theme.text),
-					Span::styled(format!("{:.0}", max), app.theme.text),
+					Span::styled("0", THEME.text),
+					Span::styled(format!("{:.0}", (min + max) / 2.0), THEME.text),
+					Span::styled(format!("{:.0}", max), THEME.text),
 				]),
 		);
 

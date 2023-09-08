@@ -1,6 +1,6 @@
 use ratatui::{prelude::*, widgets::*, Frame};
 
-use crate::terminal::App;
+use crate::{terminal::App, THEME};
 
 pub fn draw_stats<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 	let text = vec![
@@ -8,10 +8,10 @@ pub fn draw_stats<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		Line::from(format!("Frequency {}MHz", app.cpu_frequency)),
 	];
 
-	let paragraph = Paragraph::new(text.clone()).style(app.theme.text).block(
+	let paragraph = Paragraph::new(text.clone()).style(THEME.text).block(
 		Block::default()
 			.borders(Borders::ALL)
-			.border_style(app.theme.window),
+			.border_style(THEME.window),
 	);
 	f.render_widget(paragraph, area);
 }
