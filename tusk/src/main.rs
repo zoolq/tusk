@@ -4,7 +4,6 @@
 
 use std::{error::Error, io, thread, time::Instant};
 
-use config::theme::Theme;
 use crossterm::{
 	event::{self, DisableMouseCapture},
 	execute,
@@ -16,7 +15,10 @@ use namefn::namefn;
 use ratatui::prelude::*;
 use terminal::{draw::draw, App, Screen};
 
-use crate::terminal::events::{handle_event, ControlFlow};
+use crate::{
+	datapoints::{NETWORK_CUTOFF, NETWORK_MAX, NETWORK_MIN},
+	terminal::events::{handle_event, ControlFlow},
+};
 
 /// The `config` module takes care of all the programs configuration.
 mod config;
@@ -29,7 +31,7 @@ mod datapoints {
 
 	use std::time::Duration;
 
-	use memu::units::MegaByte;
+	use memu::units::{KiloByte, MegaByte};
 
 	/// How long a tick should be.
 	pub const TICK_TIME: Duration = Duration::from_millis(50);
@@ -39,8 +41,11 @@ mod datapoints {
 	pub const CPU_USAGE_DATAPOINTS: usize = 100;
 	/// How many datapoints for the network should be collected.
 	pub const NETWORK_DATAPOINTS: usize = 100;
-	/// The amount of megabytes displayed at minimum by the networks graphs.
-	pub const NETWORK_MINIMUM_HIGHEST_THRUPUT: MegaByte = MegaByte::from_u8(3);
+	/// The amount of kilobites that is displayed at minimum when the lower end cutoff is oversteped.
+	pub const NETWORK_MAX: KiloByte = KiloByte::from_u8(3);
+	pub const NETWORK_CUTOFF: KiloByte = KiloByte::from_u8(8);
+	/// The amount of kilobytes displayed at minimum by the networks graphs.
+	pub const NETWORK_MIN: KiloByte = KiloByte::from_u8(3);
 	/// How many datapoints should be collected on the tracked process.
 	pub const TRACKED_PROCESS_DATAPOINTS: usize = 100;
 	/// The amount of megabytes displayed at minimum by the tracked process.
@@ -53,12 +58,23 @@ mod datapoints {
 	pub const TRACKED_LOG_EVENTS: usize = 30;
 }
 
-pub const THEME: Theme = Theme::new();
-
 /// Currently hardcoded test tabs.
 pub const TABS: [Screen; 3] = [Screen::Default, Screen::Processes, Screen::Tracked];
 
 fn main() -> Result<(), Box<dyn Error>> {
+	assert!(
+		(NETWORK_MIN < NETWORK_CUTOFF) && (NETWORK_CUTOFF < NETWORK_MAX),
+		concat!(
+			"the equality ",
+			stringify!(NETWORK_MIN),
+			" < ",
+			stringify!(NETWORK_CUTOFF),
+			" < ",
+			stringify!(NETWORK_MAX),
+			" does not hold true"
+		)
+	);
+
 	enable_raw_mode()?;
 	let mut stdout = io::stdout();
 

@@ -12,7 +12,7 @@ use crate::{
 pub struct Byte(u64);
 
 impl Byte {
-	/// Amout of bytes in this unit.
+	/// Amount of bytes in this unit.
 	pub const FACTOR: u64 = BYTE;
 
 	/// Unit characters.
@@ -41,7 +41,7 @@ data_impl!(Self = Byte, Unit = "B", Factor = BYTE);
 pub struct KiloByte(u64);
 
 impl KiloByte {
-	/// Amout of bytes in this unit.
+	/// Amount of bytes in this unit.
 	pub const FACTOR: u64 = KILOBYTE;
 
 	/// Unit characters.
@@ -70,7 +70,7 @@ data_impl!(Self = KiloByte, Unit = "KB", Factor = KILOBYTE);
 pub struct MegaByte(u64);
 
 impl MegaByte {
-	/// Amout of bytes in this unit.
+	/// Amount of bytes in this unit.
 	pub const FACTOR: u64 = MEGABYTE;
 
 	/// Unit characters.
@@ -99,7 +99,7 @@ data_impl!(Self = MegaByte, Unit = "MB", Factor = MEGABYTE);
 pub struct GigaByte(u64);
 
 impl GigaByte {
-	/// Amout of bytes in this unit.
+	/// Amount of bytes in this unit.
 	pub const FACTOR: u64 = GIGABYTE;
 
 	/// Unit characters.
@@ -128,7 +128,7 @@ data_impl!(Self = GigaByte, Unit = "GB", Factor = GIGABYTE);
 pub struct TeraByte(u64);
 
 impl TeraByte {
-	/// Amout of bytes in this unit.
+	/// Amount of bytes in this unit.
 	pub const FACTOR: u64 = TERABYTE;
 
 	/// Unit characters.
@@ -157,7 +157,7 @@ data_impl!(Self = TeraByte, Unit = "TB", Factor = TERABYTE);
 pub struct PetaByte(u64);
 
 impl PetaByte {
-	/// Amout of bytes in this unit.
+	/// Amount of bytes in this unit.
 	pub const FACTOR: u64 = PETABYTE;
 
 	/// Unit characters.

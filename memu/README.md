@@ -20,12 +20,11 @@ println!("{}", kilo_byte.as_giga_byte().as_string_with_unit());
 
 ```
 
-In the next example we first fetch some system info using the `sysinfo` crate and then print the memory usage for every process.
-We use the `KiloByte::new()` method here, since `process.memory()` returns bytes and the new method constructs the unit from an amount of bytes.
+In the next example we have got some processes and their memory and want to convert them to [`MegaByte`]s
+We use the `KiloByte::new()` method here, since the memory of each process is given in bytes and `new()` uses bytes to construct the type.
 
 ```Rust
-use memu::units::KiloByte;
-use sysinfo::{ProcessExt, System, SystemExt};
+use memu::units::MegaByte;
 
 fn main() {
     let mut sys = System::new_all();

@@ -2,7 +2,7 @@
 pub const BITS: u64 = 8;
 
 /// Amount of bytes in a byte. This is obviously one but is used for reference.
-/// This is not recomended you use it.
+/// This is not recommended you use it.
 pub const BYTE: u64 = 1;
 
 /// Exponent of 2 for a kilo byte.
@@ -60,3 +60,8 @@ pub const RONNABYTE: u128 = YOTTABYTE * 1024;
 #[deprecated = "Unplausible amount of storage"]
 #[allow(deprecated)]
 pub const QUETTABYTE: u128 = RONNABYTE * 1024;
+
+/// The maximum amount of bits that can be converted to a unit.
+/// This is only important for the docs.
+#[allow(unused)]
+pub(crate) const MAXBITS: u128 = u64::MAX as u128 * 8;

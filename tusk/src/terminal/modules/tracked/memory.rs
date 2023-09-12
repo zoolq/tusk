@@ -1,15 +1,17 @@
-use std::collections::VecDeque;
-
 use memu::units::MegaByte;
 use ratatui::{prelude::*, widgets::*};
 
+use std::{collections::VecDeque, sync::Arc};
+
 use crate::{
+	config::theme::THEME,
 	datapoints::{TRACKED_MINIMUM_HIGHEST_MEMORY, TRACKED_PROCESS_DATAPOINTS},
 	terminal::App,
-	THEME,
 };
 
 pub fn draw_tracked_memory<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
+	let theme = Arc::clone(&THEME);
+
 	let tracked = app.tracked.as_ref().unwrap();
 
 	let (min, mut max) = min_max(&tracked.memory);
@@ -23,9 +25,9 @@ pub fn draw_tracked_memory<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) 
 		.collect();
 
 	let dataset = Dataset::default()
-		.marker(THEME.graph_style)
+		.marker(theme.graph_style)
 		.graph_type(GraphType::Line)
-		.style(THEME.graph_1)
+		.style(theme.graph_1)
 		.data(&data);
 
 	let chart = Chart::new(vec![dataset])
@@ -33,20 +35,20 @@ pub fn draw_tracked_memory<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) 
 			Block::default()
 				.title("Memory Usage (MB)".bold())
 				.borders(Borders::ALL)
-				.border_style(THEME.window),
+				.border_style(theme.window),
 		)
 		.x_axis(
 			Axis::default()
-				.style(THEME.axis)
+				.style(theme.axis)
 				.bounds([0.0, TRACKED_PROCESS_DATAPOINTS as f64]),
 		)
 		.y_axis(
 			Axis::default()
-				.style(THEME.axis)
+				.style(theme.axis)
 				.bounds([min, max])
 				.labels(vec![
-					Span::styled(format!("{:.0}", min), THEME.text),
-					Span::styled(format!("{:.0}", max), THEME.text),
+					Span::styled(format!("{:.0}", min), theme.text),
+					Span::styled(format!("{:.0}", max), theme.text),
 				]),
 		);
 

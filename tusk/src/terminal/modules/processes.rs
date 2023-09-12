@@ -1,14 +1,17 @@
+use std::sync::Arc;
+
 use ratatui::{prelude::*, widgets::*};
 
-use crate::{terminal::App, THEME};
+use crate::{config::theme::THEME, terminal::App};
 
 pub fn draw_processes<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
+	let theme = Arc::clone(&THEME);
 	let header_cells = ["Pid", "Name", "Memory", "Cpu", "Time", "Written", "Read"]
 		.iter()
-		.map(|h| Cell::from(*h).style(THEME.header));
+		.map(|h| Cell::from(*h).style(theme.header));
 
 	let header = Row::new(header_cells)
-		.style(THEME.graph_1)
+		.style(theme.graph_1)
 		.height(1)
 		.bottom_margin(1);
 
@@ -31,7 +34,7 @@ pub fn draw_processes<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 			Block::default()
 				.borders(Borders::ALL)
 				.title("Processes".bold())
-				.style(THEME.window),
+				.style(theme.window),
 		)
 		.widths(&[
 			Constraint::Max(6),

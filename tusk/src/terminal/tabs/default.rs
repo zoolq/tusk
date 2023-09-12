@@ -24,6 +24,6 @@ pub fn window_default<B: Backend>(f: &mut Frame<B>, app: &App, area: Rect) {
 		.split(chunks[2]);
 
 	draw_usage(f, app, chunks[1]);
-	draw_network(f, app, network_chunks[0]);
+	draw_network(f, app, network_chunks[0], network_chunks[1]);
 	draw_stats(f, app, chunks[0])
 }

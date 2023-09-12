@@ -1,8 +1,15 @@
+use std::sync::Arc;
+
+use lazy_static::lazy_static;
 use ratatui::{
 	style::{Color, Style},
 	symbols::Marker,
 };
 use serde::{Deserialize, Serialize};
+
+lazy_static! {
+	pub static ref THEME: Arc<Theme> = Arc::new(Theme::default());
+}
 
 #[derive(Clone, Copy)]
 pub struct Theme {
@@ -45,64 +52,15 @@ impl Theme {
 #[derive(Serialize, Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct WrapperTheme {
-	#[serde(alias = "borderColor")]
-	#[serde(default = "borders")]
 	borders: Color,
-	#[serde(alias = "backgroundColor")]
-	#[serde(default = "background")]
 	background: Color,
-	#[serde(alias = "graphColor")]
-	#[serde(default = "graph")]
 	graph: Color,
-	#[serde(default = "tab_bg")]
 	tab_bg: Color,
-	#[serde(default = "tab_fg")]
 	tab_fg: Color,
-	#[serde(default = "selected_tab_fg")]
 	selected_tab_fg: Color,
-	#[serde(alias = "selectedTab")]
-	#[serde(default = "selected_tab_bg")]
 	selected_tab_bg: Color,
-	#[serde(default = "selected_text_bg")]
 	selected_text_bg: Color,
-	#[serde(default = "selected_text_fg")]
 	selected_text_fg: Color,
-}
-
-fn background() -> Color {
-	Color::Reset
-}
-
-fn borders() -> Color {
-	Color::DarkGray
-}
-
-fn graph() -> Color {
-	Color::LightBlue
-}
-
-fn selected_tab_fg() -> Color {
-	Color::DarkGray
-}
-
-fn selected_tab_bg() -> Color {
-	Color::LightBlue
-}
-
-fn tab_fg() -> Color {
-	Color::Reset
-}
-
-fn tab_bg() -> Color {
-	Color::Blue
-}
-
-fn selected_text_bg() -> Color {
-	Color::LightBlue
-}
-
-fn selected_text_fg() -> Color {
-	Color::DarkGray
 }
 
 impl Default for Theme {

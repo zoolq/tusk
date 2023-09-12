@@ -1,8 +1,8 @@
-use std::{error::Error, fmt::Display};
+use std::{error::Error, fmt::Display, sync::Arc};
 
 use ratatui::{prelude::*, widgets::*};
 
-use crate::THEME;
+use crate::config::theme::THEME;
 
 #[derive(Debug)]
 pub enum FrameError {
@@ -21,6 +21,7 @@ impl Display for FrameError {
 impl Error for FrameError {}
 
 pub fn draw_error<B: Backend>(f: &mut Frame<B>, error: FrameError, area: Rect) {
+	let theme = Arc::clone(&THEME);
 	let text = match error {
 		FrameError::MissingTracked => vec![
 			Line::from("Error".red().bold()),
@@ -31,7 +32,7 @@ pub fn draw_error<B: Backend>(f: &mut Frame<B>, error: FrameError, area: Rect) {
 	};
 
 	let paragraph = Paragraph::new(text)
-		.block(Block::default().borders(Borders::ALL).style(THEME.error))
+		.block(Block::default().borders(Borders::ALL).style(theme.error))
 		.alignment(Alignment::Center);
 
 	f.render_widget(paragraph, area)

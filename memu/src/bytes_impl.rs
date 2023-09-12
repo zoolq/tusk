@@ -105,7 +105,7 @@ macro_rules! data_impl {
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            /// Creates this unit from the absoloute value of a [`i8`].
+            /// Creates this unit from the absolute value of a [`i8`].
             ///
             /// # Examples
             /// ```
@@ -122,7 +122,7 @@ macro_rules! data_impl {
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            /// Creates this unit from the absoloute value of a [`i16`].
+            /// Creates this unit from the absolute value of a [`i16`].
             ///
             /// # Examples
             /// ```
@@ -139,7 +139,7 @@ macro_rules! data_impl {
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            /// Creates this unit from the absoloute value of a [`i32`].
+            /// Creates this unit from the absolute value of a [`i32`].
             ///
             /// # Examples
             /// ```
@@ -156,7 +156,7 @@ macro_rules! data_impl {
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            /// Creates this unit from the absoloute value of a [`i64`].
+            /// Creates this unit from the absolute value of a [`i64`].
             ///
             /// # Examples
             /// ```
@@ -173,7 +173,7 @@ macro_rules! data_impl {
                 <$self>::new(value as u64 * Self::FACTOR)
             }
 
-            /// Creates this unit from the absoloute value of a [`i128`].
+            /// Creates this unit from the absolute value of a [`i128`].
             ///
             /// # Examples
             /// ```
@@ -250,10 +250,57 @@ macro_rules! data_impl {
                 format!("{:.}{}", self.as_f64(), Self::UNIT)
             }
 
-            /// Returns a string contaning `self.as_f64()` with the given precision and `Self::UNIT`.
+            /// Returns a string containing `self.as_f64()` with the given precision and `Self::UNIT`.
             #[cfg(feature = "units")]
             pub fn as_string_with_unit_and_precision(&self, precision: usize) -> String {
                 format!("{:.precision$}{}", self.as_f64(), Self::UNIT, precision = precision)
+            }
+
+            /// Converts the unit into `bits`.
+            pub const fn as_bits(&self) -> u128 {
+                self.0 as u128 * $crate::constants::BYTE as u128
+            }
+
+            /// Converts the unit into [`Byte`]s.
+            pub const fn as_byte(&self) -> Byte {
+                $crate::units::Byte::new(self.0)
+            }
+
+            /// Converts the unit into [`KiloByte`]s.
+            pub const fn as_kilo_byte(&self) -> $crate::units::KiloByte {
+                $crate::units::KiloByte::new(self.0)
+            }
+
+            /// Converts the unit into [`MegaByte`]s.
+            pub const fn as_mega_byte(&self) -> $crate::units::MegaByte {
+                $crate::units::MegaByte::new(self.0)
+            }
+
+            /// Converts the unit into [`GigaByte`]s.
+            pub const fn as_giga_byte(&self) -> $crate::units::GigaByte {
+                $crate::units::GigaByte::new(self.0)
+            }
+
+            /// Converts the unit into [`TeraByte`]s.
+            pub const fn as_tera_byte(&self) -> $crate::units::TeraByte {
+                $crate::units::TeraByte::new(self.0)
+            }
+
+            /// Converts the unit into [`PetaByte`]s.
+            pub const fn as_peta_byte(&self) -> $crate::units::PetaByte {
+                $crate::units::PetaByte::new(self.0)
+            }
+
+            /// Converts an amount of `bits` (multiple of 8) into this unit.
+            #[doc = concat!("The maximum number of bits that can be converted is ", stringify!($crate::constants::MAXBITS), ".")]
+            #[doc = concat!("Anything higher then this is going to result in ", stringify!(u64::MAX), " as the inner value.")]
+            pub const fn from_bits(bits: u128) -> $self {
+                let bytes = (bits / $crate::constants::BITS as u128);
+                if bytes < u64::MAX as u128 {
+                    <$self>::new(bytes as u64)
+                } else {
+                    <$self>::new(u64::MAX)
+                }
             }
 
         }
@@ -442,7 +489,7 @@ macro_rules! data_impl {
         }
 
         impl std::fmt::Display for $self {
-            /// This displays the amout of bytes. If you want to display the unit directly use
+            /// This displays the amount of bytes. If you want to display the unit directly use
             #[doc= concat!("[`", stringify!($self), "::as_f64()`] or a similar casting method.")]
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 write!(f, "{}", self.0)
@@ -464,35 +511,7 @@ macro_rules! data_impl {
         }
 
 
-        impl $crate::MemoryUnit for $self {
-            fn as_bits(&self) -> u128 {
-                self.0 as u128 * $crate::constants::BYTE as u128
-            }
-
-            fn as_byte(&self) -> Byte {
-                $crate::units::Byte::new(self.0)
-            }
-
-            fn as_kilo_byte(&self) -> $crate::units::KiloByte {
-                $crate::units::KiloByte::new(self.0)
-            }
-
-            fn as_mega_byte(&self) -> $crate::units::MegaByte {
-                $crate::units::MegaByte::new(self.0)
-            }
-
-            fn as_giga_byte(&self) -> $crate::units::GigaByte {
-                $crate::units::GigaByte::new(self.0)
-            }
-
-            fn as_tera_byte(&self) -> $crate::units::TeraByte {
-                $crate::units::TeraByte::new(self.0)
-            }
-
-            fn as_peta_byte(&self) -> $crate::units::PetaByte {
-                $crate::units::PetaByte::new(self.0)
-            }
-        }
+        impl $crate::MemoryUnit for $self {}
     };
 }
 

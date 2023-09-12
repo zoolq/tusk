@@ -1,11 +1,12 @@
 use std::io;
+use std::sync::Arc;
 
 use namefn::namefn;
 use ratatui::{prelude::*, widgets::*};
 
 use ratatui::widgets::Tabs as TabWidget;
 
-use crate::THEME;
+use crate::config::theme::THEME;
 
 use super::tabs::debug::window_debug;
 use super::tabs::default::window_default;
@@ -43,11 +44,13 @@ fn ui<B: Backend>(f: &mut Frame<B>, app: &mut App) {
 
 /// Draws the input top bar.
 fn draw_input<B: Backend>(f: &mut Frame<B>, app: &mut App, area: Rect) {
-	let input = Paragraph::new(app.input.as_str()).style(THEME.text).block(
+	let theme = Arc::clone(&THEME);
+
+	let input = Paragraph::new(app.input.as_str()).style(theme.text).block(
 		Block::default()
 			.borders(Borders::ALL)
 			.title("Input")
-			.style(THEME.window),
+			.style(theme.window),
 	);
 	f.render_widget(input, area);
 	f.set_cursor(area.x + app.input_position as u16 + 1, area.y + 1)
@@ -55,15 +58,17 @@ fn draw_input<B: Backend>(f: &mut Frame<B>, app: &mut App, area: Rect) {
 
 /// Draws the tabs top bar.
 fn draw_tabs<B: Backend>(f: &mut Frame<B>, app: &mut App, area: Rect) {
+	let theme = Arc::clone(&THEME);
+
 	let titles = app
 		.tabs
 		.iter()
-		.map(|t| text::Line::from(Span::styled(t.as_string(), THEME.tab)))
+		.map(|t| text::Line::from(Span::styled(t.as_string(), theme.tab)))
 		.collect();
 
 	let tabs = TabWidget::new(titles)
-		.block(Block::default().borders(Borders::ALL).style(THEME.window))
-		.highlight_style(THEME.selected_tab)
+		.block(Block::default().borders(Borders::ALL).style(theme.window))
+		.highlight_style(theme.selected_tab)
 		.select(app.tabs_index());
 
 	f.render_widget(tabs, area);
